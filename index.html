@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Python Scripts, Flutter & HTML Templates | DDList</title>
+<meta name="description" content="Download free Python scripts, Flutter templates, HTML templates and Telegram bots. Need installation or modification? Hire a freelance developer.">
+<meta name="keywords" content="free python scripts, flutter templates, html templates, telegram bots, source code download, freelance developer">
+<meta name="author" content="SHA REEQ">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ddlist.github.io/">
+
+<!-- Social sharing (WhatsApp, Telegram, LinkedIn, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DDList">
+<meta property="og:title" content="Free Python Scripts, Flutter & HTML Templates | DDList">
+<meta property="og:description" content="Free source code you can download and use today. Need installation or modification? Contact me.">
+<meta property="og:url" content="https://ddlist.github.io/">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Free Python Scripts, Flutter & HTML Templates | DDList">
+<meta name="twitter:description" content="Free source code you can download and use today. Need installation or modification? Contact me.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --line: #e4e6eb;
+    --ink: #171a21;
+    --muted: #6b7280;
+    --accent: #2b59ff;
+    --on-ink: #ffffff;
+    --free-bg: #e3f5ec;
+    --free-fg: #0d7546;
+    --thumb-l: 95%;
+    --thumb-s: 55%;
+    --thumb-fg-l: 38%;
+    --shadow: 0 1px 2px rgba(23,26,33,.04), 0 8px 24px -12px rgba(23,26,33,.12);
+    --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115;
+      --surface: #171a20;
+      --line: #262a33;
+      --ink: #eceef2;
+      --muted: #8b92a0;
+      --accent: #7c9bff;
+      --on-ink: #0f1115;
+      --free-bg: #12301f;
+      --free-fg: #5fd39b;
+      --thumb-l: 17%;
+      --thumb-s: 30%;
+      --thumb-fg-l: 68%;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1115;
+    --surface: #171a20;
+    --line: #262a33;
+    --ink: #eceef2;
+    --muted: #8b92a0;
+    --accent: #7c9bff;
+    --on-ink: #0f1115;
+    --free-bg: #12301f;
+    --free-fg: #5fd39b;
+    --thumb-l: 17%;
+    --thumb-s: 30%;
+    --thumb-fg-l: 68%;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .layout {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .profile {
+    position: sticky;
+    top: 32px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 24px 24px;
+    box-shadow: var(--shadow);
+  }
+  .avatar {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--on-ink);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 22px; letter-spacing: -.02em;
+    margin-bottom: 18px;
+  }
+  .profile h1 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+  .role { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .tagline {
+    margin-top: 18px;
+    font-size: 17px; font-weight: 600; letter-spacing: -.015em; line-height: 1.35;
+  }
+  .about { margin-top: 10px; color: var(--muted); font-size: 14px; }
+  .stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    margin-top: 22px; padding: 16px 0;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .stats div + div { padding-left: 16px; border-left: 1px solid var(--line); }
+  .stats b { display: block; font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+  .stats span { color: var(--muted); font-size: 13px; }
+
+  .cta-line { margin-top: 20px; font-size: 14px; font-weight: 600; }
+  .contact { display: grid; gap: 8px; margin-top: 10px; }
+  .btn {
+    display: flex; align-items: center; gap: 10px;
+    height: 42px; padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-weight: 600; font-size: 14px;
+    transition: border-color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--ink); }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .btn.primary { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+  .btn.primary:hover { opacity: .88; }
+
+  /* ---------- Main ---------- */
+  .toolbar { display: grid; gap: 16px; margin-bottom: 20px; }
+  .search { position: relative; }
+  .search svg {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--muted); pointer-events: none;
+  }
+  .search input {
+    width: 100%; height: 48px;
+    padding: 0 16px 0 44px;
+    font: inherit; color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color .15s;
+  }
+  .search input::placeholder { color: var(--muted); }
+  .search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font: inherit; font-size: 14px; font-weight: 500;
+    height: 34px; padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: border-color .15s, background .15s;
+  }
+  .chip:hover { border-color: var(--muted); }
+  .chip .n { color: var(--muted); font-size: 12px; font-weight: 500; }
+  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+  .chip[aria-pressed="true"] .n { color: inherit; opacity: .65; }
+
+  .result-count { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .card {
+    display: flex; flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .15s, transform .15s;
+  }
+  .card:hover { border-color: var(--muted); transform: translateY(-2px); }
+
+  .thumb {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: hsl(var(--h) var(--thumb-s) var(--thumb-l));
+    color: hsl(var(--h) 50% var(--thumb-fg-l));
+    display: grid; place-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .thumb svg { width: 68%; height: auto; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .free {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--free-bg); color: var(--free-fg);
+    font-size: 12px; font-weight: 700;
+    padding: 2px 9px; border-radius: 999px;
+  }
+  .body { padding: 14px 14px 14px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .title {
+    font-size: 15px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .meta {
+    margin-top: auto;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 13px;
+  }
+  .meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .meta svg { width: 14px; height: 14px; }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 64px 16px;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    color: var(--muted);
+  }
+  .empty b { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1180px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; padding: 20px 16px 48px; gap: 20px; }
+    .profile { position: static; }
+    .contact { grid-template-columns: repeat(3, 1fr); }
+    .btn { justify-content: center; }
+  }
+  @media (max-width: 720px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+  @media (max-width: 520px) {
+    .contact { grid-template-columns: 1fr; }
+    .btn { justify-content: flex-start; }
+  }
+  @media (max-width: 380px) { .grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ============ LEFT: ABOUT ============ -->
+  <aside class="profile" aria-label="About the developer">
+    <!-- EDIT: your initials, name, role, tagline, links -->
+    <div class="avatar">SR</div>
+    <h1>SHA REEQ</h1>
+    <p class="role">Freelance full-stack developer</p>
+
+    <p class="tagline">I build apps and automations, and give the code away.</p>
+    <p class="about">Python scripts, Flutter templates and HTML templates you can download and use in your own projects. Need something custom? Let's talk.</p>
+
+    <div class="stats">
+      <div><b id="statScripts">0</b><span>Free scripts</span></div>
+      <div><b id="statDownloads">0</b><span>Downloads</span></div>
+    </div>
+
+    <p class="cta-line">Need installation or modification? Contact me.</p>
+
+    <nav class="contact" aria-label="Contact">
+      <a class="btn primary" href="mailto:shariqq.com@gmail.com">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        shariqq.com@gmail.com
+      </a>
+      <a class="btn" href="https://wa.me/917997807419" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1fa855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.6-4.8A8.5 8.5 0 1 1 8 19.6L3 21Z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.3-1.9-1-.8.7a3.5 3.5 0 0 1-1.7-1.7l.7-.8-1-1.9L9 9.5Z" fill="#1fa855" stroke="none"/></svg>
+        Chat on WhatsApp
+      </a>
+      <a class="btn" href="https://mshariqq.github.io" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
+        Visit Portfolio
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ============ RIGHT: LIBRARY ============ -->
+  <main>
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search scripts and templates" aria-label="Search scripts and templates" autocomplete="off">
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Categories"></div>
+    </div>
+    <p class="result-count" id="count" aria-live="polite"></p>
+    <div class="grid" id="grid"></div>
+  </main>
+
+</div>
+
+<script>
+/* =====================================================
+   EDIT THIS LIST to add your scripts.
+   category: must match one of CATEGORIES below
+   image:    optional thumbnail URL (leave "" for a generated one)
+   link:     where the download page / repo lives
+   date:     YYYY-MM-DD
+   ===================================================== */
+var CATEGORIES = ["Python scripts", "Flutter templates", "HTML templates", "Telegram bots", "Automation"];
+
+var ITEMS = [
+  { title: "Bulk Image Resizer",            category: "Python scripts",    downloads: 1840, date: "2026-09-14", image: "", link: "#" },
+  { title: "Flutter E-commerce UI Kit",     category: "Flutter templates", downloads: 3260, date: "2026-09-10", image: "", link: "#" },
+  { title: "SaaS Landing Page",             category: "HTML templates",    downloads: 2115, date: "2026-09-06", image: "", link: "#" },
+  { title: "Telegram Auto-Reply Bot",       category: "Telegram bots",     downloads: 970,  date: "2026-09-02", image: "", link: "#" },
+  { title: "Excel to PDF Converter",        category: "Python scripts",    downloads: 1422, date: "2026-08-28", image: "", link: "#" },
+  { title: "Flutter Login & Signup Flow",   category: "Flutter templates", downloads: 2780, date: "2026-08-24", image: "", link: "#" },
+  { title: "Portfolio One-Pager",           category: "HTML templates",    downloads: 1690, date: "2026-08-19", image: "", link: "#" },
+  { title: "Instagram Post Scheduler",      category: "Automation",        downloads: 845,  date: "2026-08-15", image: "", link: "#" },
+  { title: "Web Scraper Starter",           category: "Python scripts",    downloads: 4120, date: "2026-08-09", image: "", link: "#" },
+  { title: "Flutter Food Delivery App",     category: "Flutter templates", downloads: 1935, date: "2026-08-03", image: "", link: "#" },
+  { title: "Admin Dashboard Template",      category: "HTML templates",    downloads: 2540, date: "2026-07-27", image: "", link: "#" },
+  { title: "Group Moderation Bot",          category: "Telegram bots",     downloads: 1108, date: "2026-07-21", image: "", link: "#" },
+  { title: "Invoice Generator",             category: "Python scripts",    downloads: 1275, date: "2026-07-15", image: "", link: "#" },
+  { title: "Google Sheets Auto Backup",     category: "Automation",        downloads: 632,  date: "2026-07-08", image: "", link: "#" },
+  { title: "Restaurant Menu Website",       category: "HTML templates",    downloads: 1487, date: "2026-07-01", image: "", link: "#" },
+  { title: "Flutter Chat App Template",     category: "Flutter templates", downloads: 2210, date: "2026-06-24", image: "", link: "#" }
+];
+
+/* ---------- helpers ---------- */
+var HUES = { "Python scripts": 215, "Flutter templates": 190, "HTML templates": 25, "Telegram bots": 265, "Automation": 150 };
+var state = { cat: "All", q: "" };
+
+function fmtNum(n) { return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".0", "") + "k" : String(n); }
+function fmtDate(s) {
+  var d = new Date(s + "T00:00:00");
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); }
+
+/* generated thumbnails: simple line illustrations per category, drawn in currentColor */
+function art(cat) {
+  var s = 'fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
+  var faint = 'fill="currentColor" fill-opacity=".14" stroke="none"';
+  if (cat === "Python scripts") {
+    return '<svg viewBox="0 0 160 110" aria-hidden="true"><rect x="8" y="8" width="144" height="94" rx="10" '+s+'/><path d="M8 28h144" '+s+'/>'+
+      '<circle cx="20" cy="18" r="2.5" fill="currentColor"/><circle cx="30" cy="18" r="2.5" fill="currentColor"/><circle cx="40" cy="18" r="2.5" fill="currentColor"/>'+
+      '<path d="M24 46l10 8-10 8" '+s+'/><path d="M44 64h30M44 78h52M24 78h8" '+s+'/></svg>';
+  }
+  if (cat === "Flutter templates") {
+    return '<svg viewBox="0 0 160 110" aria-hidden="true"><rect x="52" y="4" width="56" height="102" rx="12" '+s+'/><rect x="60" y="14" width="40" height="26" rx="5" '+faint+'/>'+
+      '<path d="M60 52h40M60 62h28" '+s+'/><rect x="60" y="76" width="40" height="14" rx="7" '+faint+'/><path d="M72 98h16" '+s+'/></svg>';
+  }
+  if (cat === "HTML templates") {
+    return '<svg viewBox="0 0 160 110" aria-hidden="true"><rect x="8" y="8" width="144" height="94" rx="10" '+s+'/><path d="M8 28h144" '+s+'/>'+
+      '<rect x="18" y="38" width="124" height="26" rx="5" '+faint+'/><rect x="18" y="72" width="38" height="20" rx="5" '+s+'/><rect x="61" y="72" width="38" height="20" rx="5" '+s+'/><rect x="104" y="72" width="38" height="20" rx="5" '+s+'/></svg>';
+  }
+  if (cat === "Telegram bots") {
+    return '<svg viewBox="0 0 160 110" aria-hidden="true"><rect x="12" y="10" width="86" height="34" rx="12" '+faint+'/><path d="M26 22h42M26 32h26" '+s+'/>'+
+      '<rect x="62" y="56" width="86" height="34" rx="12" '+s+'/><path d="M76 68h42M76 78h26" '+s+'/></svg>';
+  }
+  return '<svg viewBox="0 0 160 110" aria-hidden="true"><rect x="10" y="38" width="36" height="34" rx="8" '+s+'/><rect x="62" y="10" width="36" height="34" rx="8" '+faint+'/><rect x="62" y="66" width="36" height="34" rx="8" '+s+'/><rect x="114" y="38" width="36" height="34" rx="8" '+s+'/>'+
+    '<path d="M46 55h8l8-28M46 55h8l8 28M98 27h8l8 28M98 83h8l8-28" '+s+'/></svg>';
+}
+
+var ICON_DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>';
+var ICON_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>';
+
+/* ---------- render ---------- */
+function renderChips() {
+  var counts = { All: ITEMS.length };
+  ITEMS.forEach(function (i) { counts[i.category] = (counts[i.category] || 0) + 1; });
+  var wrap = document.getElementById("chips");
+  wrap.innerHTML = ["All"].concat(CATEGORIES).map(function (c) {
+    return '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (state.cat === c) + '">' +
+      esc(c) + ' <span class="n">' + (counts[c] || 0) + '</span></button>';
+  }).join("");
+}
+
+function renderGrid() {
+  var q = state.q.trim().toLowerCase();
+  var list = ITEMS.filter(function (i) {
+    return (state.cat === "All" || i.category === state.cat) &&
+      (!q || (i.title + " " + i.category).toLowerCase().indexOf(q) !== -1);
+  }).sort(function (a, b) { return b.date.localeCompare(a.date); });
+
+  document.getElementById("count").textContent =
+    list.length + (list.length === 1 ? " result" : " results");
+
+  var grid = document.getElementById("grid");
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><b>No matches</b>Try a different keyword or pick another category.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(function (i) {
+    var hue = HUES[i.category] != null ? HUES[i.category] : 220;
+    var thumb = i.image ? '<img src="' + esc(i.image) + '" alt="" loading="lazy">' : art(i.category);
+    return '<a class="card" href="' + esc(i.link) + '">' +
+      '<div class="thumb" style="--h:' + hue + '">' + thumb + '<span class="free">Free</span></div>' +
+      '<div class="body"><h2 class="title">' + esc(i.title) + '</h2>' +
+      '<div class="meta"><span title="Downloads">' + ICON_DL + fmtNum(i.downloads) + '</span>' +
+      '<span title="Date added">' + ICON_CAL + fmtDate(i.date) + '</span></div></div></a>';
+  }).join("");
+}
+
+function renderStats() {
+  var total = ITEMS.reduce(function (s, i) { return s + i.downloads; }, 0);
+  document.getElementById("statScripts").textContent = ITEMS.length;
+  document.getElementById("statDownloads").textContent = fmtNum(total);
+}
+
+document.getElementById("chips").addEventListener("click", function (e) {
+  var b = e.target.closest(".chip");
+  if (!b) return;
+  state.cat = b.getAttribute("data-cat");
+  renderChips(); renderGrid();
+});
+document.getElementById("q").addEventListener("input", function (e) {
+  state.q = e.target.value; renderGrid();
+});
+
+renderStats(); renderChips(); renderGrid();
+</script>
+</body>
+</html>
