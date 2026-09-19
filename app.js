@@ -2,10 +2,7 @@
 (function () {
   "use strict";
 
-  var CATEGORIES = ["Python scripts", "Flutter templates", "HTML templates", "Telegram bots", "Automation"];
-  var HUES = { "Python scripts": 215, "Flutter templates": 190, "HTML templates": 25, "Telegram bots": 265, "Automation": 150 };
-
-  var state = { cat: "All", q: "", items: [] };
+  var state = { cat: "All", q: "", items: [], categories: [] };
 
   /* ---------- helpers ---------- */
   function fmtNum(n) { return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".0", "") + "k" : String(n); }
@@ -44,6 +41,18 @@
   var ICON_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>';
 
   /* ---------- load from Firestore ---------- */
+  function loadCategories(callback) {
+    db.collection("categories").get().then(function (snap) {
+      var cats = [];
+      snap.forEach(function (doc) {
+        var d = doc.data();
+        cats.push({ id: doc.id, name: d.name || "", hue: d.hue || 220 });
+      });
+      cats.sort(function (a, b) { return a.name.localeCompare(b.name); });
+      callback(cats);
+    }).catch(function () { callback([]); });
+  }
+
   function loadItems(callback) {
     db.collection("items")
       .where("status", "==", "published")
@@ -79,7 +88,8 @@
     state.items.forEach(function (i) { counts[i.category] = (counts[i.category] || 0) + 1; });
     var wrap = document.getElementById("chips");
     if (!wrap) return;
-    wrap.innerHTML = ["All"].concat(CATEGORIES).map(function (c) {
+    var catNames = state.categories.map(function (c) { return c.name; });
+    wrap.innerHTML = ["All"].concat(catNames).map(function (c) {
       return '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (state.cat === c) + '">' +
         esc(c) + ' <span class="n">' + (counts[c] || 0) + '</span></button>';
     }).join("");
@@ -103,7 +113,8 @@
       return;
     }
     grid.innerHTML = list.map(function (i) {
-      var hue = HUES[i.category] != null ? HUES[i.category] : 220;
+      var catObj = state.categories.find(function (c) { return c.name === i.category; });
+      var hue = catObj ? catObj.hue : 220;
       var thumb = i.image ? '<img src="' + esc(i.image) + '" alt="" loading="lazy">' : art(i.category);
       return '<a class="card" href="' + esc(i.link) + '">' +
         '<div class="thumb" style="--h:' + hue + '">' + thumb + '<span class="free">Free</span></div>' +
@@ -142,10 +153,13 @@
   }
 
   /* ---------- init ---------- */
-  loadItems(function (items) {
-    state.items = items;
-    renderStats();
-    renderChips();
-    renderGrid();
+  loadCategories(function (cats) {
+    state.categories = cats;
+    loadItems(function (items) {
+      state.items = items;
+      renderStats();
+      renderChips();
+      renderGrid();
+    });
   });
 })();

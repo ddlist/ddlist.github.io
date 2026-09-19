@@ -183,6 +183,7 @@
     <!-- Tabs -->
     <div class="tabs" id="tabs">
       <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="categories">Categories <span class="badge" id="badgeCategories">0</span></button>
       <button class="tab" data-tab="scripts">Scripts <span class="badge" id="badgeScripts">0</span></button>
       <button class="tab" data-tab="comments">Comments <span class="badge" id="badgeComments">0</span></button>
       <button class="tab" data-tab="reports">Reports <span class="badge" id="badgeReports">0</span></button>
@@ -197,6 +198,21 @@
         <div class="stat-card"><div class="label">Open Reports</div><div class="value" id="dashReports">0</div></div>
         <div class="stat-card"><div class="label">Open Tickets</div><div class="value" id="dashTickets">0</div></div>
       </div>
+    </div>
+
+    <!-- ===== Categories ===== -->
+    <div class="panel" id="panelCategories">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h3 style="font-size:18px;">All Categories</h3>
+        <button class="btn primary" id="addCategoryBtn">+ Add Category</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Hue</th><th>Preview</th><th>Actions</th></tr></thead>
+          <tbody id="categoriesTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="categoriesEmpty" style="display:none;"><b>No categories yet</b>Click "Add Category" to create your first entry.</div>
     </div>
 
     <!-- ===== Scripts ===== -->
@@ -264,13 +280,7 @@
       </div>
       <div class="form-group">
         <label for="sCategory">Category *</label>
-        <select id="sCategory" required>
-          <option value="Python scripts">Python scripts</option>
-          <option value="Flutter templates">Flutter templates</option>
-          <option value="HTML templates">HTML templates</option>
-          <option value="Telegram bots">Telegram bots</option>
-          <option value="Automation">Automation</option>
-        </select>
+        <select id="sCategory" required></select>
       </div>
       <div class="form-group">
         <label for="sVersion">Version</label>
@@ -302,6 +312,28 @@
       <div class="form-actions full">
         <button type="submit" class="btn primary">Save</button>
         <button type="button" class="btn" id="cancelModal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========== ADD/EDIT CATEGORY MODAL ========== -->
+<div class="modal-bg" id="categoryModal">
+  <div class="modal">
+    <h3 id="catModalTitle">Add Category</h3>
+    <form id="categoryForm" class="form-grid">
+      <input type="hidden" id="catId">
+      <div class="form-group full">
+        <label for="catName">Category Name *</label>
+        <input type="text" id="catName" required placeholder="e.g. Python scripts">
+      </div>
+      <div class="form-group full">
+        <label for="catHue">Hue (0-360) - Controls thumbnail color</label>
+        <input type="number" id="catHue" min="0" max="360" value="220">
+      </div>
+      <div class="form-actions full">
+        <button type="submit" class="btn primary">Save</button>
+        <button type="button" class="btn" id="cancelCatModal">Cancel</button>
       </div>
     </form>
   </div>
@@ -371,13 +403,25 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); }
 
   /* ---------- Data ---------- */
-  var scriptsData = [], commentsData = [], reportsData = [], ticketsData = [];
+  var scriptsData = [], commentsData = [], reportsData = [], ticketsData = [], categoriesData = [];
 
   function loadAll() {
+    loadCategories();
     loadScripts();
     loadComments();
     loadReports();
     loadTickets();
+  }
+
+  function loadCategories() {
+    db.collection("categories").get().then(function (snap) {
+      categoriesData = [];
+      snap.forEach(function (doc) { categoriesData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      categoriesData.sort(function (a, b) { return (a.name || "").localeCompare(b.name || ""); });
+      renderCategories();
+      populateCategoryDropdown();
+      updateDash();
+    }).catch(function () { categoriesData = []; renderCategories(); });
   }
 
   function loadScripts() {
@@ -426,10 +470,20 @@
     document.getElementById("dashDownloads").textContent = fmtNum(totalDl);
     document.getElementById("dashReports").textContent = reportsData.filter(function (r) { return r.status !== "closed"; }).length;
     document.getElementById("dashTickets").textContent = ticketsData.filter(function (t) { return t.status !== "closed"; }).length;
+    document.getElementById("badgeCategories").textContent = categoriesData.length;
     document.getElementById("badgeScripts").textContent = scriptsData.length;
     document.getElementById("badgeComments").textContent = commentsData.length;
     document.getElementById("badgeReports").textContent = reportsData.filter(function (r) { return r.status !== "closed"; }).length;
     document.getElementById("badgeTickets").textContent = ticketsData.filter(function (t) { return t.status !== "closed"; }).length;
+  }
+
+  function populateCategoryDropdown() {
+    var sel = document.getElementById("sCategory");
+    var current = sel.value;
+    sel.innerHTML = categoriesData.map(function (c) {
+      return '<option value="' + esc(c.name) + '">' + esc(c.name) + '</option>';
+    }).join("");
+    if (current) sel.value = current;
   }
 
   /* ---------- Render Scripts ---------- */
@@ -456,6 +510,25 @@
         '<td><div class="row-actions">' +
           '<button class="icon-btn edit-btn" data-id="' + esc(s.id) + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>' +
           '<button class="icon-btn del-btn" data-id="' + esc(s.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+  }
+
+  /* ---------- Render Categories ---------- */
+  function renderCategories() {
+    var tbody = document.getElementById("categoriesTable");
+    var empty = document.getElementById("categoriesEmpty");
+    if (!categoriesData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    tbody.innerHTML = categoriesData.map(function (c) {
+      var hue = c.hue || 220;
+      return '<tr>' +
+        '<td><strong>' + esc(c.name) + '</strong></td>' +
+        '<td>' + hue + '</td>' +
+        '<td><div style="width:40px;height:28px;border-radius:6px;background:hsl(' + hue + ' 55% 95%);border:1px solid var(--line);"></div></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="icon-btn edit-cat-btn" data-id="' + esc(c.id) + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>' +
+          '<button class="icon-btn del-cat-btn" data-id="' + esc(c.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
         '</div></td></tr>';
     }).join("");
   }
@@ -534,6 +607,64 @@
 
   document.getElementById("cancelModal").addEventListener("click", function () { modal.classList.remove("open"); });
   modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("open"); });
+
+  /* ---------- Category Modal ---------- */
+  var catModal = document.getElementById("categoryModal");
+  var catForm = document.getElementById("categoryForm");
+  var catModalTitle = document.getElementById("catModalTitle");
+
+  document.getElementById("addCategoryBtn").addEventListener("click", function () {
+    catModalTitle.textContent = "Add Category";
+    catForm.reset();
+    document.getElementById("catId").value = "";
+    document.getElementById("catHue").value = "220";
+    catModal.classList.add("open");
+  });
+
+  document.getElementById("cancelCatModal").addEventListener("click", function () { catModal.classList.remove("open"); });
+  catModal.addEventListener("click", function (e) { if (e.target === catModal) catModal.classList.remove("open"); });
+
+  /* Category edit/delete */
+  document.getElementById("categoriesTable").addEventListener("click", function (e) {
+    var editBtn = e.target.closest(".edit-cat-btn");
+    var delBtn = e.target.closest(".del-cat-btn");
+    if (editBtn) {
+      var id = editBtn.dataset.id;
+      var c = categoriesData.find(function (x) { return x.id === id; });
+      if (!c) return;
+      catModalTitle.textContent = "Edit Category";
+      document.getElementById("catId").value = c.id;
+      document.getElementById("catName").value = c.name || "";
+      document.getElementById("catHue").value = c.hue || 220;
+      catModal.classList.add("open");
+    }
+    if (delBtn) {
+      if (!confirm("Delete this category? Scripts using it will keep their category name.")) return;
+      db.collection("categories").doc(delBtn.dataset.id).delete().then(loadCategories);
+    }
+  });
+
+  /* Category form submit */
+  catForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var id = document.getElementById("catId").value;
+    var data = {
+      name: document.getElementById("catName").value.trim(),
+      hue: parseInt(document.getElementById("catHue").value) || 220
+    };
+    if (!data.name) return alert("Category name is required");
+
+    var promise;
+    if (id) {
+      promise = db.collection("categories").doc(id).update(data);
+    } else {
+      promise = db.collection("categories").add(data);
+    }
+    promise.then(function () {
+      catModal.classList.remove("open");
+      loadCategories();
+    }).catch(function (err) { alert("Error: " + err.message); });
+  });
 
   /* Edit button */
   document.getElementById("scriptsTable").addEventListener("click", function (e) {
