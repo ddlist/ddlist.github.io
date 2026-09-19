@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact | DDList</title>
+<meta name="description" content="Get in touch with SHA REEQ. Email, WhatsApp, or send a message directly. Freelance full-stack developer for hire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --line: #e4e6eb;
+    --ink: #171a21;
+    --muted: #6b7280;
+    --accent: #2b59ff;
+    --on-ink: #ffffff;
+    --shadow: 0 1px 2px rgba(23,26,33,.04), 0 8px 24px -12px rgba(23,26,33,.12);
+    --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115;
+      --surface: #171a20;
+      --line: #262a33;
+      --ink: #eceef2;
+      --muted: #8b92a0;
+      --accent: #7c9bff;
+      --on-ink: #0f1115;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1115;
+    --surface: #171a20;
+    --line: #262a33;
+    --ink: #eceef2;
+    --muted: #8b92a0;
+    --accent: #7c9bff;
+    --on-ink: #0f1115;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .page { max-width: 720px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  /* Nav */
+  .topnav {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 40px;
+    font-size: 14px;
+  }
+  .topnav a {
+    color: var(--muted); font-weight: 500;
+    transition: color .15s;
+  }
+  .topnav a:hover { color: var(--ink); }
+  .topnav svg { width: 18px; height: 18px; }
+
+  .page-title { font-size: 28px; font-weight: 700; letter-spacing: -.03em; margin-bottom: 6px; }
+  .page-sub { color: var(--muted); font-size: 15px; margin-bottom: 36px; }
+
+  /* Contact cards */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .contact-card {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+    padding: 20px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    transition: border-color .15s, transform .15s;
+  }
+  .contact-card:hover { border-color: var(--muted); transform: translateY(-2px); }
+  .contact-card svg { width: 22px; height: 22px; flex: none; }
+  .contact-card .label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+  .contact-card .value { font-size: 14px; font-weight: 600; color: var(--ink); word-break: break-all; }
+
+  /* Form */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 26px;
+    box-shadow: var(--shadow);
+  }
+  .form-card h2 { font-size: 18px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--muted); }
+  .field input,
+  .field textarea {
+    width: 100%;
+    font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: border-color .15s;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .field input::placeholder,
+  .field textarea::placeholder { color: var(--muted); }
+  .field textarea { resize: vertical; min-height: 130px; }
+
+  .btn-submit {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 44px; padding: 0 24px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: var(--on-ink);
+    font: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn-submit:hover { opacity: .88; }
+  .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+  .status { margin-top: 14px; font-size: 14px; font-weight: 500; display: none; }
+  .status.ok { display: block; color: #0d7546; }
+  .status.err { display: block; color: #c0392b; }
+
+  /* Footer */
+  footer {
+    max-width: 720px; margin: 0 auto; padding: 24px 24px 48px;
+    border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+    gap: 12px; font-size: 13px; color: var(--muted);
+  }
+  footer nav { display: flex; gap: 16px; }
+
+  @media (max-width: 520px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .page { padding: 20px 16px 48px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Top nav -->
+  <nav class="topnav" aria-label="Breadcrumb">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Home
+    </a>
+  </nav>
+
+  <h1 class="page-title">Contact</h1>
+  <p class="page-sub">Need installation, modification, or a custom project? Reach out through any of these channels.</p>
+
+  <!-- Quick links -->
+  <div class="contact-grid">
+    <a class="contact-card" href="mailto:shariqq.com@gmail.com">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      <span class="label">Email</span>
+      <span class="value">shariqq.com@gmail.com</span>
+    </a>
+    <a class="contact-card" href="https://wa.me/917997807419" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1fa855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.6-4.8A8.5 8.5 0 1 1 8 19.6L3 21Z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.3-1.9-1-.8.7a3.5 3.5 0 0 1-1.7-1.7l.7-.8-1-1.9L9 9.5Z" fill="#1fa855" stroke="none"/></svg>
+      <span class="label">WhatsApp</span>
+      <span class="value">+91 7997807419</span>
+    </a>
+    <a class="contact-card" href="https://mshariqq.github.io" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
+      <span class="label">Portfolio</span>
+      <span class="value">mshariqq.github.io</span>
+    </a>
+  </div>
+
+  <!-- Message form -->
+  <div class="form-card">
+    <h2>Send a Message</h2>
+    <form id="contactForm" novalidate>
+      <div class="field">
+        <label for="f-name">Name</label>
+        <input id="f-name" name="name" type="text" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label for="f-email">Email</label>
+        <input id="f-email" name="email" type="email" placeholder="you@example.com" required>
+      </div>
+      <div class="field">
+        <label for="f-subject">Subject</label>
+        <input id="f-subject" name="subject" type="text" placeholder="What is this about?" required>
+      </div>
+      <div class="field">
+        <label for="f-message">Message</label>
+        <textarea id="f-message" name="message" placeholder="Write your message here..." required></textarea>
+      </div>
+      <button class="btn-submit" type="submit" id="submitBtn">Send Message</button>
+      <p class="status" id="status"></p>
+    </form>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <span>&copy; 2026 DDList &mdash; SHA REEQ</span>
+  <nav>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="tickets.html">Support</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="disclaimer.html">Disclaimer</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+(function () {
+  var form = document.getElementById('contactForm');
+  var status = document.getElementById('status');
+  var btn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var name = form.name.value.trim();
+    var email = form.email.value.trim();
+    var subject = form.subject.value.trim();
+    var message = form.message.value.trim();
+
+    if (!name || !email || !subject || !message) {
+      status.textContent = 'Please fill in all fields.';
+      status.className = 'status err';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.textContent = '';
+    status.className = 'status';
+
+    db.collection('messages').add({
+      name: name,
+      email: email,
+      subject: subject,
+      message: message,
+      date: new Date().toISOString()
+    })
+    .then(function () {
+      status.textContent = 'Message sent! I will get back to you soon.';
+      status.className = 'status ok';
+      form.reset();
+    })
+    .catch(function (err) {
+      status.textContent = 'Something went wrong. Please try again.';
+      status.className = 'status err';
+    })
+    .finally(function () {
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+    });
+  });
+})();
+</script>
+</body>
+</html>

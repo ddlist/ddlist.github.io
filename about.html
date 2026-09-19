@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About | DDList</title>
+<meta name="description" content="Learn about DDList and SHA REEQ - the developer behind free Python scripts, Flutter templates, and HTML templates.">
+<meta name="author" content="SHA REEQ">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ddlist.github.io/about.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DDList">
+<meta property="og:title" content="About | DDList">
+<meta property="og:description" content="Learn about DDList and SHA REEQ - the developer behind free Python scripts, Flutter templates, and HTML templates.">
+<meta property="og:url" content="https://ddlist.github.io/about.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --line: #e4e6eb;
+    --ink: #171a21;
+    --muted: #6b7280;
+    --accent: #2b59ff;
+    --on-ink: #ffffff;
+    --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115;
+      --surface: #171a20;
+      --line: #262a33;
+      --ink: #eceef2;
+      --muted: #8b92a0;
+      --accent: #7c9bff;
+      --on-ink: #0f1115;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1115;
+    --surface: #171a20;
+    --line: #262a33;
+    --ink: #eceef2;
+    --muted: #8b92a0;
+    --accent: #7c9bff;
+    --on-ink: #0f1115;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .layout {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .profile {
+    position: sticky;
+    top: 32px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 24px 24px;
+  }
+  .avatar {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--on-ink);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 22px; letter-spacing: -.02em;
+    margin-bottom: 18px;
+  }
+  .profile h1 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+  .role { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .cta-line { margin-top: 20px; font-size: 14px; font-weight: 600; }
+  .contact { display: grid; gap: 8px; margin-top: 10px; }
+  .btn {
+    display: flex; align-items: center; gap: 10px;
+    height: 42px; padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-weight: 600; font-size: 14px;
+    transition: border-color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--ink); }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .btn.primary { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+  .btn.primary:hover { opacity: .88; }
+
+  /* ---------- Main Content ---------- */
+  .content {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px 28px;
+  }
+  .content h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin-bottom: 12px;
+  }
+  .content p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .content p:last-child { margin-bottom: 0; }
+  .content ul {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .content li { margin-bottom: 6px; }
+  .content a { color: var(--accent); font-weight: 500; }
+  .content a:hover { text-decoration: underline; }
+  .section { margin-bottom: 28px; }
+  .section:last-child { margin-bottom: 0; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; padding: 20px 16px 48px; gap: 20px; }
+    .profile { position: static; }
+    .contact { grid-template-columns: repeat(3, 1fr); }
+    .btn { justify-content: center; }
+  }
+  @media (max-width: 520px) {
+    .contact { grid-template-columns: 1fr; }
+    .btn { justify-content: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ============ LEFT: ABOUT ============ -->
+  <aside class="profile" aria-label="About the developer">
+    <div class="avatar">SR</div>
+    <h1>SHA REEQ</h1>
+    <p class="role">Freelance full-stack developer</p>
+
+    <p class="cta-line">Need installation or modification? Contact me.</p>
+
+    <nav class="contact" aria-label="Contact">
+      <a class="btn primary" href="mailto:shariqq.com@gmail.com">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        shariqq.com@gmail.com
+      </a>
+      <a class="btn" href="https://wa.me/917997807419" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1fa855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.6-4.8A8.5 8.5 0 1 1 8 19.6L3 21Z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.3-1.9-1-.8.7a3.5 3.5 0 0 1-1.7-1.7l.7-.8-1-1.9L9 9.5Z" fill="#1fa855" stroke="none"/></svg>
+        Chat on WhatsApp
+      </a>
+      <a class="btn" href="https://mshariqq.github.io" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg>
+        Visit Portfolio
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ============ RIGHT: CONTENT ============ -->
+  <main class="content">
+    <div class="section">
+      <h2>About DDList</h2>
+      <p>DDList is a free library of ready-to-use source code for developers, students, and hobbyists. The project offers Python scripts, Flutter templates, and HTML templates that you can download, study, and use in your own projects without any cost.</p>
+      <p>Every item in the collection comes with full source code so you can learn from it, customize it, or drop it straight into your own project. If you need help with installation, modification, or something entirely custom, you can reach out for freelance support.</p>
+    </div>
+
+    <div class="section">
+      <h2>About SHA REEQ</h2>
+      <p>SHA REEQ is a freelance full-stack developer who builds apps, automations, and web projects. A believer in open sharing, SHA REEQ publishes free tools and templates on DDList so more developers can learn and ship faster.</p>
+      <p>Work spans Python scripting, Flutter mobile development, and modern HTML/CSS front-ends. Beyond writing code, SHA REEQ offers installation, modification, and custom development services for individuals and small teams.</p>
+    </div>
+
+    <div class="section">
+      <h2>What You Get</h2>
+      <ul>
+        <li>Free Python scripts for automation, bots, and utilities</li>
+        <li>Flutter templates and starter projects</li>
+        <li>HTML templates for landing pages and dashboards</li>
+        <li>Full source code you can study, modify, and redistribute</li>
+        <li>Freelance support when you need something custom</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Get in Touch</h2>
+      <p>Questions, feedback, or a project idea? Reach out via email at <a href="mailto:shariqq.com@gmail.com">shariqq.com@gmail.com</a>, message on <a href="https://wa.me/917997807419" target="_blank" rel="noopener">WhatsApp</a>, or visit the <a href="https://mshariqq.github.io" target="_blank" rel="noopener">portfolio</a>.</p>
+    </div>
+  </main>
+
+</div>
+
+<!-- Footer -->
+<footer style="max-width:1320px;margin:0 auto;padding:24px 24px 48px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--muted);">
+  <span>&copy; 2026 DDList &mdash; SHA REEQ</span>
+  <nav style="display:flex;gap:16px;">
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="tickets.html">Support</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="disclaimer.html">Disclaimer</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</footer>
+
+</body>
+</html>

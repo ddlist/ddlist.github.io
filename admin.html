@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel | DDList</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7; --surface: #ffffff; --line: #e4e6eb; --ink: #171a21; --muted: #6b7280;
+    --accent: #2b59ff; --on-ink: #ffffff; --danger: #dc2626; --success: #16a34a; --warn: #f59e0b;
+    --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1115; --surface: #171a20; --line: #262a33; --ink: #eceef2; --muted: #8b92a0;
+      --accent: #7c9bff; --on-ink: #0f1115; --danger: #f87171; --success: #4ade80; --warn: #fbbf24;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- Login Screen ---------- */
+  .login-screen { display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+  .login-box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 48px 40px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 8px 24px -12px rgba(0,0,0,.12); }
+  .login-box h1 { font-size: 24px; margin-bottom: 8px; }
+  .login-box p { color: var(--muted); margin-bottom: 28px; font-size: 14px; }
+  .login-box img { width: 48px; height: 48px; margin-bottom: 20px; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    height: 44px; padding: 0 20px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-family: var(--font); font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+  .btn.primary:hover { opacity: .88; }
+  .btn.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .btn.danger:hover { opacity: .88; }
+  .btn.sm { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+
+  /* ---------- Layout ---------- */
+  .app { display: none; }
+  .app.active { display: block; }
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+    padding: 0 32px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar h2 { font-size: 18px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .topbar-right img { width: 32px; height: 32px; border-radius: 50%; }
+  .topbar-right span { font-size: 14px; font-weight: 500; }
+  .content { max-width: 1200px; margin: 0 auto; padding: 32px; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 4px; margin-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .tab {
+    padding: 10px 18px; font-size: 14px; font-weight: 600; color: var(--muted);
+    background: none; border: none; border-bottom: 2px solid transparent;
+    cursor: pointer; transition: color .15s, border-color .15s; font-family: var(--font);
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; padding: 0 6px; margin-left: 6px;
+    background: var(--line); border-radius: 999px; font-size: 11px; font-weight: 700;
+  }
+  .tab.active .badge { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ---------- Stats Row ---------- */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px;
+  }
+  .stat-card .label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .stat-card .value { font-size: 28px; font-weight: 700; letter-spacing: -.03em; }
+
+  /* ---------- Form ---------- */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 13px; font-weight: 600; }
+  .form-group input, .form-group select, .form-group textarea {
+    height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface); color: var(--ink); font: inherit; font-size: 14px;
+    transition: border-color .15s;
+  }
+  .form-group textarea { height: 100px; padding: 10px 12px; resize: vertical; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .form-actions { display: flex; gap: 10px; margin-top: 8px; }
+
+  /* ---------- Table ---------- */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--line); background: var(--bg); }
+  td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: color-mix(in srgb, var(--ink) 3%, transparent); }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  }
+  .status-badge.published { background: #dcfce7; color: #166534; }
+  .status-badge.draft { background: #fef3c7; color: #92400e; }
+  .status-badge.closed { background: #e5e7eb; color: #374151; }
+  .status-badge.open { background: #dbeafe; color: #1e40af; }
+
+  .row-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 32px; height: 32px; display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+    cursor: pointer; transition: border-color .15s; color: var(--muted);
+  }
+  .icon-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  /* ---------- Modal ---------- */
+  .modal-bg {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.4); place-items: center; padding: 24px;
+  }
+  .modal-bg.open { display: grid; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 28px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 18px; margin-bottom: 20px; }
+
+  .empty-msg { text-align: center; padding: 48px 16px; color: var(--muted); }
+  .empty-msg b { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
+
+  @media (max-width: 768px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .content { padding: 20px 16px; }
+    .topbar { padding: 0 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <h1>Admin Panel</h1>
+    <p>Sign in with your Google account to manage scripts and content.</p>
+    <button class="btn primary" id="googleLoginBtn" style="width:100%;height:48px;font-size:15px;">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Sign in with Google
+    </button>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div class="app" id="app">
+  <header class="topbar">
+    <h2>DDList Admin</h2>
+    <div class="topbar-right">
+      <img id="userAvatar" src="" alt="">
+      <span id="userName"></span>
+      <button class="btn sm" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- Tabs -->
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="scripts">Scripts <span class="badge" id="badgeScripts">0</span></button>
+      <button class="tab" data-tab="comments">Comments <span class="badge" id="badgeComments">0</span></button>
+      <button class="tab" data-tab="reports">Reports <span class="badge" id="badgeReports">0</span></button>
+      <button class="tab" data-tab="tickets">Tickets <span class="badge" id="badgeTickets">0</span></button>
+    </div>
+
+    <!-- ===== Dashboard ===== -->
+    <div class="panel active" id="panelDashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="label">Total Scripts</div><div class="value" id="dashScripts">0</div></div>
+        <div class="stat-card"><div class="label">Total Downloads</div><div class="value" id="dashDownloads">0</div></div>
+        <div class="stat-card"><div class="label">Open Reports</div><div class="value" id="dashReports">0</div></div>
+        <div class="stat-card"><div class="label">Open Tickets</div><div class="value" id="dashTickets">0</div></div>
+      </div>
+    </div>
+
+    <!-- ===== Scripts ===== -->
+    <div class="panel" id="panelScripts">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h3 style="font-size:18px;">All Scripts</h3>
+        <button class="btn primary" id="addScriptBtn">+ Add Script</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Title</th><th>Category</th><th>Version</th><th>Downloads</th><th>Comments</th><th>Reports</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="scriptsTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="scriptsEmpty" style="display:none;"><b>No scripts yet</b>Click "Add Script" to create your first entry.</div>
+    </div>
+
+    <!-- ===== Comments ===== -->
+    <div class="panel" id="panelComments">
+      <h3 style="font-size:18px;margin-bottom:20px;">Comments</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Script</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="commentsTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="commentsEmpty" style="display:none;"><b>No comments yet</b></div>
+    </div>
+
+    <!-- ===== Reports ===== -->
+    <div class="panel" id="panelReports">
+      <h3 style="font-size:18px;margin-bottom:20px;">Reports</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Script</th><th>Reason</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="reportsTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="reportsEmpty" style="display:none;"><b>No reports yet</b></div>
+    </div>
+
+    <!-- ===== Tickets ===== -->
+    <div class="panel" id="panelTickets">
+      <h3 style="font-size:18px;margin-bottom:20px;">Help Tickets</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Subject</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="ticketsTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="ticketsEmpty" style="display:none;"><b>No tickets yet</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ADD/EDIT SCRIPT MODAL ========== -->
+<div class="modal-bg" id="scriptModal">
+  <div class="modal">
+    <h3 id="modalTitle">Add Script</h3>
+    <form id="scriptForm" class="form-grid">
+      <input type="hidden" id="scriptId">
+      <div class="form-group full">
+        <label for="sTitle">Title *</label>
+        <input type="text" id="sTitle" required>
+      </div>
+      <div class="form-group">
+        <label for="sCategory">Category *</label>
+        <select id="sCategory" required>
+          <option value="Python scripts">Python scripts</option>
+          <option value="Flutter templates">Flutter templates</option>
+          <option value="HTML templates">HTML templates</option>
+          <option value="Telegram bots">Telegram bots</option>
+          <option value="Automation">Automation</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sVersion">Version</label>
+        <input type="text" id="sVersion" placeholder="e.g. 1.0.0">
+      </div>
+      <div class="form-group full">
+        <label for="sImage">Thumbnail URL</label>
+        <input type="url" id="sImage" placeholder="https://...">
+      </div>
+      <div class="form-group full">
+        <label for="sLink">Download Link *</label>
+        <input type="url" id="sLink" required>
+      </div>
+      <div class="form-group full">
+        <label for="sDetails">Details / Description</label>
+        <textarea id="sDetails"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="sStatus">Status</label>
+        <select id="sStatus">
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sDownloads">Downloads (override)</label>
+        <input type="number" id="sDownloads" min="0" value="0">
+      </div>
+      <div class="form-actions full">
+        <button type="submit" class="btn primary">Save</button>
+        <button type="button" class="btn" id="cancelModal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var ADMIN_EMAILS = ["shariqq.com@gmail.com"];
+
+  /* ---------- DOM refs ---------- */
+  var loginScreen = document.getElementById("loginScreen");
+  var appEl = document.getElementById("app");
+  var googleLoginBtn = document.getElementById("googleLoginBtn");
+  var logoutBtn = document.getElementById("logoutBtn");
+  var userAvatar = document.getElementById("userAvatar");
+  var userName = document.getElementById("userName");
+
+  /* ---------- Auth ---------- */
+  googleLoginBtn.addEventListener("click", function () {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(function (err) {
+      alert("Login failed: " + err.message);
+    });
+  });
+
+  logoutBtn.addEventListener("click", function () { auth.signOut(); });
+
+  auth.onAuthStateChanged(function (user) {
+    if (user && ADMIN_EMAILS.indexOf(user.email) !== -1) {
+      loginScreen.style.display = "none";
+      appEl.classList.add("active");
+      userAvatar.src = user.photoURL || "";
+      userName.textContent = user.displayName || user.email;
+      loadAll();
+    } else {
+      loginScreen.style.display = "grid";
+      appEl.classList.remove("active");
+      if (user) auth.signOut();
+    }
+  });
+
+  /* ---------- Tabs ---------- */
+  document.getElementById("tabs").addEventListener("click", function (e) {
+    var btn = e.target.closest(".tab");
+    if (!btn) return;
+    document.querySelectorAll(".tab").forEach(function (t) { t.classList.remove("active"); });
+    document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById("panel" + capitalize(btn.dataset.tab)).classList.add("active");
+  });
+  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  /* ---------- Format helpers ---------- */
+  function fmtNum(n) { return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".0", "") + "k" : String(n); }
+  function fmtDate(ts) {
+    if (!ts) return "—";
+    var d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); }
+
+  /* ---------- Data ---------- */
+  var scriptsData = [], commentsData = [], reportsData = [], ticketsData = [];
+
+  function loadAll() {
+    loadScripts();
+    loadComments();
+    loadReports();
+    loadTickets();
+  }
+
+  function loadScripts() {
+    db.collection("items").get().then(function (snap) {
+      scriptsData = [];
+      snap.forEach(function (doc) { scriptsData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      scriptsData.sort(function (a, b) { return (b.createdAt || "") > (a.createdAt || "") ? 1 : -1; });
+      renderScripts();
+      updateDash();
+    });
+  }
+
+  function loadComments() {
+    db.collection("comments").get().then(function (snap) {
+      commentsData = [];
+      snap.forEach(function (doc) { commentsData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      commentsData.sort(function (a, b) { return (b.date || "") > (a.date || "") ? 1 : -1; });
+      renderComments();
+      updateDash();
+    }).catch(function () { commentsData = []; renderComments(); });
+  }
+
+  function loadReports() {
+    db.collection("reports").get().then(function (snap) {
+      reportsData = [];
+      snap.forEach(function (doc) { reportsData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      reportsData.sort(function (a, b) { return (b.date || "") > (a.date || "") ? 1 : -1; });
+      renderReports();
+      updateDash();
+    }).catch(function () { reportsData = []; renderReports(); });
+  }
+
+  function loadTickets() {
+    db.collection("tickets").get().then(function (snap) {
+      ticketsData = [];
+      snap.forEach(function (doc) { ticketsData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      ticketsData.sort(function (a, b) { return (b.date || "") > (a.date || "") ? 1 : -1; });
+      renderTickets();
+      updateDash();
+    }).catch(function () { ticketsData = []; renderTickets(); });
+  }
+
+  function updateDash() {
+    var totalDl = scriptsData.reduce(function (s, i) { return s + (i.downloads || 0); }, 0);
+    document.getElementById("dashScripts").textContent = scriptsData.length;
+    document.getElementById("dashDownloads").textContent = fmtNum(totalDl);
+    document.getElementById("dashReports").textContent = reportsData.filter(function (r) { return r.status !== "closed"; }).length;
+    document.getElementById("dashTickets").textContent = ticketsData.filter(function (t) { return t.status !== "closed"; }).length;
+    document.getElementById("badgeScripts").textContent = scriptsData.length;
+    document.getElementById("badgeComments").textContent = commentsData.length;
+    document.getElementById("badgeReports").textContent = reportsData.filter(function (r) { return r.status !== "closed"; }).length;
+    document.getElementById("badgeTickets").textContent = ticketsData.filter(function (t) { return t.status !== "closed"; }).length;
+  }
+
+  /* ---------- Render Scripts ---------- */
+  function renderScripts() {
+    var tbody = document.getElementById("scriptsTable");
+    var empty = document.getElementById("scriptsEmpty");
+    if (!scriptsData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+
+    /* count comments & reports per script */
+    var cCounts = {}, rCounts = {};
+    commentsData.forEach(function (c) { cCounts[c.itemId] = (cCounts[c.itemId] || 0) + 1; });
+    reportsData.forEach(function (r) { rCounts[r.itemId] = (rCounts[r.itemId] || 0) + 1; });
+
+    tbody.innerHTML = scriptsData.map(function (s) {
+      return '<tr>' +
+        '<td><strong>' + esc(s.title) + '</strong></td>' +
+        '<td>' + esc(s.category) + '</td>' +
+        '<td>' + esc(s.version || '—') + '</td>' +
+        '<td>' + fmtNum(s.downloads || 0) + '</td>' +
+        '<td>' + (cCounts[s.id] || 0) + '</td>' +
+        '<td>' + (rCounts[s.id] || 0) + '</td>' +
+        '<td><span class="status-badge ' + (s.status || 'published') + '">' + esc(s.status || 'published') + '</span></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="icon-btn edit-btn" data-id="' + esc(s.id) + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>' +
+          '<button class="icon-btn del-btn" data-id="' + esc(s.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+  }
+
+  /* ---------- Render Comments ---------- */
+  function renderComments() {
+    var tbody = document.getElementById("commentsTable");
+    var empty = document.getElementById("commentsEmpty");
+    if (!commentsData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    tbody.innerHTML = commentsData.map(function (c) {
+      return '<tr>' +
+        '<td>' + esc(c.user || 'Anonymous') + '</td>' +
+        '<td>' + esc(c.itemTitle || c.itemId) + '</td>' +
+        '<td>' + esc(c.text || '') + '</td>' +
+        '<td>' + fmtDate(c.date) + '</td>' +
+        '<td><button class="icon-btn del-btn" data-col="comments" data-id="' + esc(c.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></td>' +
+        '</tr>';
+    }).join("");
+  }
+
+  /* ---------- Render Reports ---------- */
+  function renderReports() {
+    var tbody = document.getElementById("reportsTable");
+    var empty = document.getElementById("reportsEmpty");
+    if (!reportsData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    tbody.innerHTML = reportsData.map(function (r) {
+      var status = r.status || "open";
+      return '<tr>' +
+        '<td>' + esc(r.user || 'Anonymous') + '</td>' +
+        '<td>' + esc(r.itemTitle || r.itemId) + '</td>' +
+        '<td>' + esc(r.reason || '') + '</td>' +
+        '<td>' + fmtDate(r.date) + '</td>' +
+        '<td><span class="status-badge ' + status + '">' + esc(status) + '</span></td>' +
+        '<td><div class="row-actions">' +
+          (status !== 'closed' ? '<button class="icon-btn close-btn" data-col="reports" data-id="' + esc(r.id) + '" title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>' : '') +
+          '<button class="icon-btn del-btn" data-col="reports" data-id="' + esc(r.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+  }
+
+  /* ---------- Render Tickets ---------- */
+  function renderTickets() {
+    var tbody = document.getElementById("ticketsTable");
+    var empty = document.getElementById("ticketsEmpty");
+    if (!ticketsData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    tbody.innerHTML = ticketsData.map(function (t) {
+      var status = t.status || "open";
+      return '<tr>' +
+        '<td>' + esc(t.user || 'Anonymous') + '</td>' +
+        '<td>' + esc(t.subject || '') + '</td>' +
+        '<td>' + esc(t.message || '') + '</td>' +
+        '<td>' + fmtDate(t.date) + '</td>' +
+        '<td><span class="status-badge ' + status + '">' + esc(status) + '</span></td>' +
+        '<td><div class="row-actions">' +
+          (status !== 'closed' ? '<button class="icon-btn close-btn" data-col="tickets" data-id="' + esc(t.id) + '" title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>' : '') +
+          '<button class="icon-btn del-btn" data-col="tickets" data-id="' + esc(t.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+  }
+
+  /* ---------- Modal ---------- */
+  var modal = document.getElementById("scriptModal");
+  var scriptForm = document.getElementById("scriptForm");
+  var modalTitle = document.getElementById("modalTitle");
+
+  document.getElementById("addScriptBtn").addEventListener("click", function () {
+    modalTitle.textContent = "Add Script";
+    scriptForm.reset();
+    document.getElementById("scriptId").value = "";
+    document.getElementById("sDownloads").value = "0";
+    modal.classList.add("open");
+  });
+
+  document.getElementById("cancelModal").addEventListener("click", function () { modal.classList.remove("open"); });
+  modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("open"); });
+
+  /* Edit button */
+  document.getElementById("scriptsTable").addEventListener("click", function (e) {
+    var editBtn = e.target.closest(".edit-btn");
+    var delBtn = e.target.closest(".del-btn");
+    if (editBtn) {
+      var id = editBtn.dataset.id;
+      var s = scriptsData.find(function (x) { return x.id === id; });
+      if (!s) return;
+      modalTitle.textContent = "Edit Script";
+      document.getElementById("scriptId").value = s.id;
+      document.getElementById("sTitle").value = s.title || "";
+      document.getElementById("sCategory").value = s.category || "Python scripts";
+      document.getElementById("sVersion").value = s.version || "";
+      document.getElementById("sImage").value = s.image || "";
+      document.getElementById("sLink").value = s.link || "";
+      document.getElementById("sDetails").value = s.details || "";
+      document.getElementById("sStatus").value = s.status || "published";
+      document.getElementById("sDownloads").value = s.downloads || 0;
+      modal.classList.add("open");
+    }
+    if (delBtn) {
+      if (!confirm("Delete this script?")) return;
+      db.collection("items").doc(delBtn.dataset.id).delete().then(loadScripts);
+    }
+  });
+
+  /* ---------- Form submit ---------- */
+  scriptForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var id = document.getElementById("scriptId").value;
+    var data = {
+      title: document.getElementById("sTitle").value.trim(),
+      category: document.getElementById("sCategory").value,
+      version: document.getElementById("sVersion").value.trim(),
+      image: document.getElementById("sImage").value.trim(),
+      link: document.getElementById("sLink").value.trim(),
+      details: document.getElementById("sDetails").value.trim(),
+      status: document.getElementById("sStatus").value,
+      downloads: parseInt(document.getElementById("sDownloads").value) || 0,
+      date: new Date().toISOString().slice(0, 10)
+    };
+
+    var promise;
+    if (id) {
+      promise = db.collection("items").doc(id).update(data);
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      promise = db.collection("items").add(data);
+    }
+    promise.then(function () {
+      modal.classList.remove("open");
+      loadScripts();
+    }).catch(function (err) {
+      alert("Error: " + err.message);
+    });
+  });
+
+  /* ---------- Close / Delete actions on all tables ---------- */
+  document.addEventListener("click", function (e) {
+    var closeBtn = e.target.closest(".close-btn");
+    var delBtn = e.target.closest(".del-btn");
+    if (closeBtn) {
+      var col = closeBtn.dataset.col;
+      var cid = closeBtn.dataset.id;
+      db.collection(col).doc(cid).update({ status: "closed" }).then(function () {
+        if (col === "reports") loadReports();
+        if (col === "tickets") loadTickets();
+      });
+    }
+    if (delBtn && delBtn.dataset.col) {
+      if (!confirm("Delete this item?")) return;
+      var col2 = delBtn.dataset.col;
+      var did = delBtn.dataset.id;
+      db.collection(col2).doc(did).delete().then(function () {
+        if (col2 === "comments") loadComments();
+        if (col2 === "reports") loadReports();
+        if (col2 === "tickets") loadTickets();
+      });
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
