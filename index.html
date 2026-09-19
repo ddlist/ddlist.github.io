@@ -254,6 +254,90 @@
   }
   @media (max-width: 380px) { .grid { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* ---------- Detail Modal ---------- */
+  .detail-bg {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,.5); padding: 24px; overflow-y: auto;
+  }
+  .detail-bg.open { display: flex; justify-content: center; align-items: flex-start; }
+  .detail-modal {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    max-width: 900px; width: 100%; margin: 40px auto; overflow: hidden;
+    box-shadow: 0 24px 48px -12px rgba(0,0,0,.25);
+  }
+  .detail-close {
+    position: absolute; top: 16px; right: 16px; z-index: 10;
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--surface); display: grid; place-items: center;
+    cursor: pointer; transition: border-color .15s; color: var(--muted);
+  }
+  .detail-close:hover { border-color: var(--ink); color: var(--ink); }
+  .detail-close svg { width: 18px; height: 18px; }
+  .detail-hero {
+    position: relative; aspect-ratio: 16/7; overflow: hidden;
+    background: hsl(var(--h) 55% 95%); display: grid; place-items: center;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { .detail-hero { background: hsl(var(--h) 30% 17%); } } }
+  .detail-hero svg { width: 30%; opacity: .5; }
+  .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .detail-body { display: grid; grid-template-columns: 1fr 300px; gap: 0; }
+  .detail-main { padding: 28px 32px; }
+  .detail-side { padding: 28px 24px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 20px; }
+  .detail-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--free-bg); color: var(--free-fg); margin-bottom: 12px;
+  }
+  .detail-title { font-size: 24px; font-weight: 700; letter-spacing: -.03em; line-height: 1.25; margin-bottom: 16px; }
+  .detail-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; color: var(--muted); font-size: 13px; }
+  .detail-meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .detail-meta svg { width: 14px; height: 14px; }
+  .detail-desc { font-size: 15px; line-height: 1.7; color: var(--ink); }
+  .detail-desc p { margin-bottom: 12px; }
+
+  .side-card {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px;
+  }
+  .side-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .side-card .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .side-card .info-row span:first-child { color: var(--muted); }
+  .side-card .info-row span:last-child { font-weight: 600; }
+
+  .dl-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; height: 46px; border-radius: 10px; border: none;
+    background: var(--accent); color: #fff; font-family: var(--font); font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: opacity .15s; text-decoration: none;
+  }
+  .dl-btn:hover { opacity: .88; color: #fff; }
+  .dl-btn svg { width: 18px; height: 18px; }
+
+  .comments-section { margin-top: 8px; }
+  .comments-section h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .comment-item { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .comment-item:last-child { border-bottom: none; }
+  .comment-user { font-size: 13px; font-weight: 600; }
+  .comment-text { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .comment-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .comment-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .comment-form input, .comment-form textarea {
+    width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; resize: vertical;
+  }
+  .comment-form input:focus, .comment-form textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .comment-form textarea { min-height: 60px; }
+  .comment-form button { align-self: flex-end; }
+
+  @media (max-width: 768px) {
+    .detail-body { grid-template-columns: 1fr; }
+    .detail-side { border-left: none; border-top: 1px solid var(--line); }
+    .detail-main { padding: 20px; }
+    .detail-side { padding: 20px; }
+    .detail-hero { aspect-ratio: 16/9; }
+  }
 </style>
 </head>
 <body>
@@ -305,6 +389,45 @@
     <div class="grid" id="grid"></div>
   </main>
 
+</div>
+
+<!-- ========== SCRIPT DETAIL MODAL ========== -->
+<div class="detail-bg" id="detailBg">
+  <div class="detail-modal">
+    <button class="detail-close" id="detailClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="detail-hero" id="detailHero"></div>
+    <div class="detail-body">
+      <div class="detail-main">
+        <span class="detail-tag" id="detailCategory"></span>
+        <h2 class="detail-title" id="detailTitle"></h2>
+        <div class="detail-meta" id="detailMeta"></div>
+        <div class="detail-desc" id="detailDesc"></div>
+      </div>
+      <div class="detail-side">
+        <div class="side-card">
+          <h4>Download</h4>
+          <div class="info-row"><span>Version</span><span id="detailVersion">—</span></div>
+          <div class="info-row"><span>Updated</span><span id="detailDate">—</span></div>
+          <div class="info-row"><span>Downloads</span><span id="detailDownloads">0</span></div>
+          <a class="dl-btn" id="detailLink" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
+            Download Free
+          </a>
+        </div>
+        <div class="side-card comments-section">
+          <h4>Comments (<span id="commentCount">0</span>)</h4>
+          <div id="commentsList"></div>
+          <form class="comment-form" id="commentForm">
+            <input type="text" id="commentName" placeholder="Your name" required>
+            <textarea id="commentText" placeholder="Write a comment..." required></textarea>
+            <button type="submit" class="btn primary sm">Post Comment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Footer -->
