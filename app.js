@@ -365,6 +365,7 @@
   document.getElementById("grid").addEventListener("click", function (e) {
     var loadBtn = e.target.closest(".load-more-btn");
     if (loadBtn) { state.visibleCount += 19; renderGrid(); return; }
+  });
 
   /* ---------- init ---------- */
   loadCategories(function (cats) {
