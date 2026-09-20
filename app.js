@@ -176,6 +176,10 @@
     dlBtn.href = item.link;
     dlBtn.setAttribute("data-install", item.installation ? "1" : "0");
 
+    /* dev card - only show if installation enabled */
+    var devCard = document.querySelector(".dev-card");
+    if (devCard) devCard.style.display = item.installation !== false ? "" : "none";
+
     /* youtube */
     var ytCard = document.getElementById("youtubeCard");
     var ytWrap = document.getElementById("youtubeWrap");
