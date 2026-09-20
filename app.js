@@ -271,7 +271,12 @@
       count.textContent = comments.length;
       if (!comments.length) { list.innerHTML = '<p style="font-size:13px;color:var(--muted);">No comments yet. Be the first!</p>'; return; }
       list.innerHTML = comments.map(function (c) {
-        return '<div class="comment-item"><div class="comment-user">' + esc(c.user || "Anonymous") + '</div><div class="comment-text">' + esc(c.text || "") + '</div><div class="comment-date">' + fmtDate(c.date) + '</div></div>';
+        var name = c.user || "Anonymous";
+        var initials = name.split(" ").map(function (w) { return w.charAt(0); }).join("").toUpperCase().slice(0, 2);
+        var hue = 0;
+        for (var j = 0; j < name.length; j++) hue = (hue * 31 + name.charCodeAt(j)) % 360;
+        var bg = "hsl(" + hue + " 45% 45%)";
+        return '<div class="comment-item"><div class="comment-head"><div class="comment-avatar" style="background:' + bg + '">' + esc(initials) + '</div><div class="comment-info"><span class="comment-user">' + esc(name) + '</span></div><span class="comment-date">' + fmtDate(c.date) + '</span></div><div class="comment-text">' + esc(c.text || "") + '</div></div>';
       }).join("");
     }).catch(function () { list.innerHTML = '<p style="font-size:13px;color:var(--muted);">No comments yet.</p>'; count.textContent = "0"; });
   }
