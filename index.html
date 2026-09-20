@@ -564,6 +564,15 @@
           <button class="btn primary sm" id="submitReport">Submit Report</button>
           <div class="report-success" id="reportSuccess">Report submitted. Thank you!</div>
         </div>
+        <div class="comments-section" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--line);">
+          <h4>Comments (<span id="commentCount">0</span>)</h4>
+          <div id="commentsList"></div>
+          <form class="comment-form" id="commentForm">
+            <input type="text" id="commentName" placeholder="Your name" required>
+            <textarea id="commentText" placeholder="Write a comment..." required></textarea>
+            <button type="submit" class="btn primary sm">Post Comment</button>
+          </form>
+        </div>
       </div>
       <div class="detail-side">
         <div class="side-card">
@@ -596,15 +605,6 @@
               Upwork
             </a>
           </div>
-        </div>
-        <div class="side-card comments-section">
-          <h4>Comments (<span id="commentCount">0</span>)</h4>
-          <div id="commentsList"></div>
-          <form class="comment-form" id="commentForm">
-            <input type="text" id="commentName" placeholder="Your name" required>
-            <textarea id="commentText" placeholder="Write a comment..." required></textarea>
-            <button type="submit" class="btn primary sm">Post Comment</button>
-          </form>
         </div>
       </div>
     </div>
