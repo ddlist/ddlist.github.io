@@ -297,7 +297,8 @@
         var hue = 0;
         for (var j = 0; j < name.length; j++) hue = (hue * 31 + name.charCodeAt(j)) % 360;
         var bg = "hsl(" + hue + " 45% 45%)";
-        return '<div class="comment-item"><div class="comment-head"><div class="comment-avatar" style="background:' + bg + '">' + esc(initials) + '</div><div class="comment-info"><span class="comment-user">' + esc(name) + '</span></div><span class="comment-date">' + fmtDate(c.date) + '</span></div><div class="comment-text">' + esc(c.text || "") + '</div></div>';
+        var replyHtml = c.reply ? '<div class="comment-reply"><div class="comment-reply-head"><span class="comment-user">Admin</span></div><div class="comment-text">' + esc(c.reply) + '</div></div>' : '';
+        return '<div class="comment-item"><div class="comment-head"><div class="comment-avatar" style="background:' + bg + '">' + esc(initials) + '</div><div class="comment-info"><span class="comment-user">' + esc(name) + '</span></div><span class="comment-date">' + fmtDate(c.date) + '</span></div><div class="comment-text">' + esc(c.text || "") + '</div>' + replyHtml + '</div>';
       }).join("");
     }).catch(function () { list.innerHTML = '<p class="comment-empty">No comments yet.</p>'; count.textContent = "0"; });
   }

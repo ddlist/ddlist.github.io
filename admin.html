@@ -188,6 +188,8 @@
       <button class="tab" data-tab="comments">Comments <span class="badge" id="badgeComments">0</span></button>
       <button class="tab" data-tab="reports">Reports <span class="badge" id="badgeReports">0</span></button>
       <button class="tab" data-tab="tickets">Tickets <span class="badge" id="badgeTickets">0</span></button>
+      <button class="tab" data-tab="messages">Messages <span class="badge" id="badgeMessages">0</span></button>
+      <button class="tab" data-tab="leads">Leads <span class="badge" id="badgeLeads">0</span></button>
     </div>
 
     <!-- ===== Dashboard ===== -->
@@ -208,7 +210,7 @@
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Name</th><th>Hue</th><th>Preview</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Name</th><th>Hue</th><th>Preview</th><th>Scripts</th><th>Actions</th></tr></thead>
           <tbody id="categoriesTable"></tbody>
         </table>
       </div>
@@ -235,7 +237,7 @@
       <h3 style="font-size:18px;margin-bottom:20px;">Comments</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>User</th><th>Script</th><th>Comment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>User</th><th>Script</th><th>Comment</th><th>Reply</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="commentsTable"></tbody>
         </table>
       </div>
@@ -264,6 +266,30 @@
         </table>
       </div>
       <div class="empty-msg" id="ticketsEmpty" style="display:none;"><b>No tickets yet</b></div>
+    </div>
+
+    <!-- ===== Messages ===== -->
+    <div class="panel" id="panelMessages">
+      <h3 style="font-size:18px;margin-bottom:20px;">Contact Messages</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="messagesTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="messagesEmpty" style="display:none;"><b>No messages yet</b></div>
+    </div>
+
+    <!-- ===== Leads ===== -->
+    <div class="panel" id="panelLeads">
+      <h3 style="font-size:18px;margin-bottom:20px;">Installation Leads</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Phone</th><th>Script</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="leadsTable"></tbody>
+        </table>
+      </div>
+      <div class="empty-msg" id="leadsEmpty" style="display:none;"><b>No leads yet</b></div>
     </div>
   </div>
 </div>
@@ -415,7 +441,7 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); }
 
   /* ---------- Data ---------- */
-  var scriptsData = [], commentsData = [], reportsData = [], ticketsData = [], categoriesData = [];
+  var scriptsData = [], commentsData = [], reportsData = [], ticketsData = [], categoriesData = [], messagesData = [], leadsData = [];
 
   function loadAll() {
     loadCategories();
@@ -423,6 +449,8 @@
     loadComments();
     loadReports();
     loadTickets();
+    loadMessages();
+    loadLeads();
   }
 
   function loadCategories() {
@@ -476,6 +504,26 @@
     }).catch(function () { ticketsData = []; renderTickets(); });
   }
 
+  function loadMessages() {
+    db.collection("messages").get().then(function (snap) {
+      messagesData = [];
+      snap.forEach(function (doc) { messagesData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      messagesData.sort(function (a, b) { return (b.date || "") > (a.date || "") ? 1 : -1; });
+      renderMessages();
+      updateDash();
+    }).catch(function () { messagesData = []; renderMessages(); });
+  }
+
+  function loadLeads() {
+    db.collection("leads").get().then(function (snap) {
+      leadsData = [];
+      snap.forEach(function (doc) { leadsData.push({ id: doc.id, _ref: doc.ref, ...doc.data() }); });
+      leadsData.sort(function (a, b) { return (b.date || "") > (a.date || "") ? 1 : -1; });
+      renderLeads();
+      updateDash();
+    }).catch(function () { leadsData = []; renderLeads(); });
+  }
+
   function updateDash() {
     var totalDl = scriptsData.reduce(function (s, i) { return s + (i.downloads || 0); }, 0);
     document.getElementById("dashScripts").textContent = scriptsData.length;
@@ -487,6 +535,8 @@
     document.getElementById("badgeComments").textContent = commentsData.length;
     document.getElementById("badgeReports").textContent = reportsData.filter(function (r) { return r.status !== "closed"; }).length;
     document.getElementById("badgeTickets").textContent = ticketsData.filter(function (t) { return t.status !== "closed"; }).length;
+    document.getElementById("badgeMessages").textContent = messagesData.length;
+    document.getElementById("badgeLeads").textContent = leadsData.length;
   }
 
   function populateCategoryDropdown() {
@@ -534,13 +584,15 @@
     empty.style.display = "none";
     tbody.innerHTML = categoriesData.map(function (c) {
       var hue = c.hue || 220;
+      var count = scriptsData.filter(function (s) { return s.category === c.name; }).length;
       return '<tr>' +
         '<td><strong>' + esc(c.name) + '</strong></td>' +
         '<td>' + hue + '</td>' +
         '<td><div style="width:40px;height:28px;border-radius:6px;background:hsl(' + hue + ' 55% 95%);border:1px solid var(--line);"></div></td>' +
+        '<td>' + count + ' script' + (count !== 1 ? 's' : '') + '</td>' +
         '<td><div class="row-actions">' +
           '<button class="icon-btn edit-cat-btn" data-id="' + esc(c.id) + '" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>' +
-          '<button class="icon-btn del-cat-btn" data-id="' + esc(c.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+          '<button class="icon-btn del-cat-btn" data-id="' + esc(c.id) + '" data-count="' + count + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
         '</div></td></tr>';
     }).join("");
   }
@@ -557,17 +609,52 @@
         '<td>' + esc(c.user || 'Anonymous') + '</td>' +
         '<td>' + esc(c.itemTitle || c.itemId) + '</td>' +
         '<td>' + esc(c.text || '') + '</td>' +
+        '<td>' + (c.reply ? '<div style="font-size:12px;color:var(--accent);border-left:2px solid var(--accent);padding-left:6px;margin-top:4px;">Reply: ' + esc(c.reply) + '</div>' : '—') + '</td>' +
         '<td>' + fmtDate(c.date) + '</td>' +
         '<td><span class="status-badge ' + (blocked ? 'closed' : 'published') + '">' + (blocked ? 'Blocked' : 'Visible') + '</span></td>' +
         '<td><div class="row-actions">' +
+          '<button class="icon-btn reply-btn" data-id="' + esc(c.id) + '" title="Reply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>' +
           '<button class="icon-btn block-btn" data-id="' + esc(c.id) + '" data-blocked="' + (blocked ? '1' : '0') + '" title="' + (blocked ? 'Unblock' : 'Block') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg></button>' +
           '<button class="icon-btn del-btn" data-col="comments" data-id="' + esc(c.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
-        '</div></td>' +
-        '</tr>';
+        '</div></td></tr>';
     }).join("");
   }
 
-  /* ---------- Render Reports ---------- */
+  /* ---------- Render Messages ---------- */
+  function renderMessages() {
+    var tbody = document.getElementById("messagesTable");
+    var empty = document.getElementById("messagesEmpty");
+    if (!messagesData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    tbody.innerHTML = messagesData.map(function (m) {
+      return '<tr>' +
+        '<td>' + esc(m.name || '') + '</td>' +
+        '<td>' + esc(m.email || '') + '</td>' +
+        '<td>' + esc(m.subject || '') + '</td>' +
+        '<td>' + esc(m.message || '') + '</td>' +
+        '<td>' + fmtDate(m.date) + '</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="icon-btn del-btn" data-col="messages" data-id="' + esc(m.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+  }
+
+  /* ---------- Render Leads ---------- */
+  function renderLeads() {
+    var tbody = document.getElementById("leadsTable");
+    var empty = document.getElementById("leadsEmpty");
+    if (!leadsData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    tbody.innerHTML = leadsData.map(function (l) {
+      return '<tr>' +
+        '<td>' + esc(l.phone || '') + '</td>' +
+        '<td>' + esc(l.scriptTitle || l.scriptId || '') + '</td>' +
+        '<td>' + fmtDate(l.date) + '</td>' +
+        '<td><div class="row-actions">' +
+          '<button class="icon-btn del-btn" data-col="leads" data-id="' + esc(l.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join("");
+  }
   function renderReports() {
     var tbody = document.getElementById("reportsTable");
     var empty = document.getElementById("reportsEmpty");
@@ -657,7 +744,9 @@
       catModal.classList.add("open");
     }
     if (delBtn) {
-      if (!confirm("Delete this category? Scripts using it will keep their category name.")) return;
+      var count = parseInt(delBtn.dataset.count) || 0;
+      if (count > 0) return alert("Cannot delete: " + count + " script" + (count !== 1 ? "s" : "") + " still use this category. Move or delete them first.");
+      if (!confirm("Delete this category?")) return;
       db.collection("categories").doc(delBtn.dataset.id).delete().then(loadCategories);
     }
   });
@@ -749,15 +838,23 @@
     });
   });
 
-  /* ---------- Close / Delete / Block actions ---------- */
+  /* ---------- Close / Delete / Block / Reply actions ---------- */
   document.addEventListener("click", function (e) {
     var blockBtn = e.target.closest(".block-btn");
+    var replyBtn = e.target.closest(".reply-btn");
     var closeBtn = e.target.closest(".close-btn");
     var delBtn = e.target.closest(".del-btn");
     if (blockBtn) {
       var bid = blockBtn.dataset.id;
       var isBlocked = blockBtn.dataset.blocked === "1";
       db.collection("comments").doc(bid).update({ blocked: !isBlocked }).then(loadComments);
+    }
+    if (replyBtn) {
+      var rid = replyBtn.dataset.id;
+      var reply = prompt("Enter your reply:");
+      if (reply && reply.trim()) {
+        db.collection("comments").doc(rid).update({ reply: reply.trim() }).then(loadComments);
+      }
     }
     if (closeBtn) {
       var col = closeBtn.dataset.col;
