@@ -21,6 +21,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Free Python Scripts, Flutter & HTML Templates | DDList">
 <meta name="twitter:description" content="Free source code you can download and use today. Need installation or modification? Contact me.">
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -296,6 +297,34 @@
   .detail-desc { font-size: 15px; line-height: 1.7; color: var(--ink); }
   .detail-desc p { margin-bottom: 12px; }
 
+  .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .detail-tag-item {
+    padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    background: var(--bg); border: 1px solid var(--line); color: var(--muted);
+  }
+
+  .report-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: border-color .15s, color .15s; font-family: var(--font);
+  }
+  .report-btn:hover { border-color: #dc2626; color: #dc2626; }
+  .report-btn svg { width: 14px; height: 14px; }
+
+  .report-form { display: none; margin-top: 12px; padding: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  .report-form.open { display: block; }
+  .report-form select, .report-form input, .report-form textarea {
+    width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; margin-bottom: 8px;
+  }
+  .report-form textarea { height: 60px; resize: vertical; }
+  .report-form select:focus, .report-form input:focus, .report-form textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .report-success { color: var(--success); font-size: 13px; font-weight: 600; display: none; }
+  .report-success.show { display: block; }
+
   .side-card {
     background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px;
   }
@@ -339,14 +368,21 @@
     .detail-hero { aspect-ratio: 16/9; }
   }
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XV6V6H0YW9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XV6V6H0YW9');
+</script>
 </head>
 <body>
 <div class="layout">
 
   <!-- ============ LEFT: ABOUT ============ -->
   <aside class="profile" aria-label="About the developer">
-    <!-- EDIT: your initials, name, role, tagline, links -->
-    <div class="avatar">SR</div>
+    <img src="logo.png" alt="DDList" style="width:64px;height:64px;border-radius:18px;object-fit:cover;margin-bottom:18px;">
     <h1>SHA REEQ</h1>
     <p class="role">Freelance full-stack developer</p>
 
@@ -381,9 +417,17 @@
     <div class="toolbar">
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="Search scripts and templates" aria-label="Search scripts and templates" autocomplete="off">
+        <input id="q" type="search" placeholder="Search scripts, templates, descriptions..." aria-label="Search scripts and templates" autocomplete="off">
       </div>
-      <div class="chips" id="chips" role="group" aria-label="Categories"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <div class="chips" id="chips" role="group" aria-label="Categories"></div>
+        <select id="sortSelect" style="height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:500;cursor:pointer;">
+          <option value="newest">Newest</option>
+          <option value="downloads">Most Downloaded</option>
+          <option value="alpha">A &rarr; Z</option>
+        </select>
+      </div>
+      <div class="chips" id="tagChips" role="group" aria-label="Tags"></div>
     </div>
     <p class="result-count" id="count" aria-live="polite"></p>
     <div class="grid" id="grid"></div>
@@ -403,7 +447,24 @@
         <span class="detail-tag" id="detailCategory"></span>
         <h2 class="detail-title" id="detailTitle"></h2>
         <div class="detail-meta" id="detailMeta"></div>
+        <div class="detail-tags" id="detailTags"></div>
         <div class="detail-desc" id="detailDesc"></div>
+        <button class="report-btn" id="reportBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Report Issue
+        </button>
+        <div class="report-form" id="reportForm">
+          <select id="reportReason">
+            <option value="Broken download link">Broken download link</option>
+            <option value="Wrong category">Wrong category</option>
+            <option value="Outdated script">Outdated script</option>
+            <option value="Does not work">Does not work</option>
+            <option value="Other">Other</option>
+          </select>
+          <textarea id="reportDetails" placeholder="Additional details (optional)"></textarea>
+          <button class="btn primary sm" id="submitReport">Submit Report</button>
+          <div class="report-success" id="reportSuccess">Report submitted. Thank you!</div>
+        </div>
       </div>
       <div class="detail-side">
         <div class="side-card">
