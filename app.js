@@ -266,7 +266,7 @@
     list.innerHTML = '<p class="comment-empty">Loading...</p>';
     db.collection("comments").where("itemId", "==", itemId).get().then(function (snap) {
       var comments = [];
-      snap.forEach(function (doc) { comments.push(doc.data()); });
+      snap.forEach(function (doc) { var d = doc.data(); if (!d.blocked) comments.push(d); });
       comments.sort(function (a, b) { return (b.date || "") > (a.date || "") ? 1 : -1; });
       count.textContent = comments.length;
       if (!comments.length) { list.innerHTML = '<p class="comment-empty">No comments yet. Be the first!</p>'; return; }

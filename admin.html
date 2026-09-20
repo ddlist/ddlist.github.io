@@ -235,7 +235,7 @@
       <h3 style="font-size:18px;margin-bottom:20px;">Comments</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>User</th><th>Script</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>User</th><th>Script</th><th>Comment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="commentsTable"></tbody>
         </table>
       </div>
@@ -548,12 +548,17 @@
     if (!commentsData.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
     empty.style.display = "none";
     tbody.innerHTML = commentsData.map(function (c) {
-      return '<tr>' +
+      var blocked = c.blocked ? true : false;
+      return '<tr style="' + (blocked ? 'opacity:.5;' : '') + '">' +
         '<td>' + esc(c.user || 'Anonymous') + '</td>' +
         '<td>' + esc(c.itemTitle || c.itemId) + '</td>' +
         '<td>' + esc(c.text || '') + '</td>' +
         '<td>' + fmtDate(c.date) + '</td>' +
-        '<td><button class="icon-btn del-btn" data-col="comments" data-id="' + esc(c.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></td>' +
+        '<td><span class="status-badge ' + (blocked ? 'closed' : 'published') + '">' + (blocked ? 'Blocked' : 'Visible') + '</span></td>' +
+        '<td><div class="row-actions">' +
+          '<button class="icon-btn block-btn" data-id="' + esc(c.id) + '" data-blocked="' + (blocked ? '1' : '0') + '" title="' + (blocked ? 'Unblock' : 'Block') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg></button>' +
+          '<button class="icon-btn del-btn" data-col="comments" data-id="' + esc(c.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>' +
+        '</div></td>' +
         '</tr>';
     }).join("");
   }
@@ -737,10 +742,16 @@
     });
   });
 
-  /* ---------- Close / Delete actions on all tables ---------- */
+  /* ---------- Close / Delete / Block actions ---------- */
   document.addEventListener("click", function (e) {
+    var blockBtn = e.target.closest(".block-btn");
     var closeBtn = e.target.closest(".close-btn");
     var delBtn = e.target.closest(".del-btn");
+    if (blockBtn) {
+      var bid = blockBtn.dataset.id;
+      var isBlocked = blockBtn.dataset.blocked === "1";
+      db.collection("comments").doc(bid).update({ blocked: !isBlocked }).then(loadComments);
+    }
     if (closeBtn) {
       var col = closeBtn.dataset.col;
       var cid = closeBtn.dataset.id;
