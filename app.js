@@ -41,7 +41,8 @@
           downloads: d.downloads || 0, date: d.date || "", image: d.image || "",
           link: d.link || "#", version: d.version || "", details: d.details || "",
           author: d.author || "SHA REEQ", tags: d.tags || [],
-          installation: d.installation !== false
+          installation: d.installation !== false,
+          youtube: d.youtube || ""
         });
       });
       cb(items);
@@ -174,6 +175,19 @@
     var dlBtn = document.getElementById("detailLink");
     dlBtn.href = item.link;
     dlBtn.setAttribute("data-install", item.installation ? "1" : "0");
+
+    /* youtube */
+    var ytCard = document.getElementById("youtubeCard");
+    var ytWrap = document.getElementById("youtubeWrap");
+    if (item.youtube) {
+      var vid = "";
+      var m = item.youtube.match(/(?:v=|youtu\.be\/|embed\/)([^&?#]+)/);
+      if (m) vid = m[1];
+      if (vid) {
+        ytWrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + esc(vid) + '" allowfullscreen title="Video preview"></iframe>';
+        ytCard.style.display = "";
+      } else { ytCard.style.display = "none"; ytWrap.innerHTML = ""; }
+    } else { ytCard.style.display = "none"; ytWrap.innerHTML = ""; }
 
     trackDownload(item.id);
     loadComments(item.id);

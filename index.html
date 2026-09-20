@@ -398,6 +398,24 @@
   .dev-upwork { background: #14a800; }
   .dev-btn:hover { opacity: .85; color: #fff; }
 
+  .report-link {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; height: 36px; border: none; border-radius: 8px;
+    background: none; color: #dc2626; font-family: var(--font); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .15s; margin-top: 8px;
+  }
+  .report-link:hover { background: #fef2f2; }
+  .report-link svg { width: 14px; height: 14px; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { .report-link:hover { background: #3b1111; } } }
+
+  .youtube-wrap {
+    position: relative; width: 100%; padding-bottom: 56.25%;
+    border-radius: 10px; overflow: hidden; background: #000;
+  }
+  .youtube-wrap iframe {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+  }
+
   .dl-btn {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; height: 46px; border-radius: 10px; border: none;
@@ -550,10 +568,6 @@
         <div class="detail-meta" id="detailMeta"></div>
         <div style="border-top:1px solid var(--line);margin:20px 0;"></div>
         <div class="detail-desc" id="detailDesc"></div>
-        <button class="report-btn" id="reportBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Report Issue
-        </button>
         <div class="report-form" id="reportForm">
           <select id="reportReason">
             <option value="Broken download link">Broken download link</option>
@@ -586,6 +600,14 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
             Download Free
           </a>
+          <button class="report-link" id="reportBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Report Issue
+          </button>
+        </div>
+        <div class="side-card" id="youtubeCard" style="display:none;">
+          <h4>Preview Video</h4>
+          <div class="youtube-wrap" id="youtubeWrap"></div>
         </div>
         <div class="side-card dev-card">
           <h4>Developer Details</h4>

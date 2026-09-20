@@ -295,6 +295,10 @@
         <input type="url" id="sImage" placeholder="https://...">
       </div>
       <div class="form-group full">
+        <label for="sYoutube">YouTube Video URL (optional)</label>
+        <input type="url" id="sYoutube" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+      <div class="form-group full">
         <label for="sLink">Download Link *</label>
         <input type="url" id="sLink" required>
       </div>
@@ -694,6 +698,7 @@
       document.getElementById("sVersion").value = s.version || "";
       document.getElementById("sTags").value = (s.tags || []).join(", ");
       document.getElementById("sImage").value = s.image || "";
+      document.getElementById("sYoutube").value = s.youtube || "";
       document.getElementById("sLink").value = s.link || "";
       document.getElementById("sDetails").value = s.details || "";
       document.getElementById("sStatus").value = s.status || "published";
@@ -719,6 +724,7 @@
       version: document.getElementById("sVersion").value.trim(),
       tags: tags,
       image: document.getElementById("sImage").value.trim(),
+      youtube: document.getElementById("sYoutube").value.trim(),
       link: document.getElementById("sLink").value.trim(),
       details: document.getElementById("sDetails").value.trim(),
       status: document.getElementById("sStatus").value,
