@@ -606,19 +606,6 @@
         <div class="detail-meta" id="detailMeta"></div>
         <div style="border-top:1px solid var(--line);margin:20px 0;"></div>
         <div class="detail-desc" id="detailDesc"></div>
-        <div class="report-form" id="reportForm">
-          <select id="reportReason">
-            <option value="Broken download link">Broken download link</option>
-            <option value="Wrong category">Wrong category</option>
-            <option value="Outdated script">Outdated script</option>
-            <option value="Does not work">Does not work</option>
-            <option value="Other">Other</option>
-          </select>
-          <input type="email" id="reportEmail" placeholder="Your email (so we can reply)">
-          <textarea id="reportDetails" placeholder="Additional details (optional)"></textarea>
-          <button class="btn primary sm" id="submitReport">Submit Report</button>
-        </div>
-        <div class="report-success" id="reportSuccess">We have received and we respect your query. We will reply on your email.</div>
         <div class="comments-section" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--line);">
           <h4>Comments (<span id="commentCount">0</span>)</h4>
           <div id="commentsList"></div>
@@ -643,6 +630,19 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
             Report Issue
           </button>
+          <div class="report-form" id="reportForm">
+            <select id="reportReason">
+              <option value="Broken download link">Broken download link</option>
+              <option value="Wrong category">Wrong category</option>
+              <option value="Outdated script">Outdated script</option>
+              <option value="Does not work">Does not work</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="email" id="reportEmail" placeholder="Your email (so we can reply)">
+            <textarea id="reportDetails" placeholder="Additional details (optional)"></textarea>
+            <button class="btn primary sm" id="submitReport">Submit Report</button>
+          </div>
+          <div class="report-success" id="reportSuccess">We have received and we respect your query. We will reply on your email.</div>
         </div>
         <div class="side-card dev-card">
           <h4>Developer Details</h4>
