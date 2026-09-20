@@ -278,19 +278,23 @@
   .detail-close svg { width: 18px; height: 18px; }
   .detail-hero {
     position: relative; aspect-ratio: 16/7; overflow: hidden;
-    background: hsl(var(--h) 55% 95%); display: grid; place-items: center;
+    background: hsl(var(--h) 55% 95%); display: grid; grid-template-columns: 7fr 3fr;
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { .detail-hero { background: hsl(var(--h) 30% 17%); } } }
-  .detail-hero svg { width: 30%; opacity: .5; }
-  .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-thumb { width: 100%; height: 100%; display: grid; place-items: center; overflow: hidden; }
+  .hero-thumb svg { width: 30%; opacity: .5; }
+  .hero-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-yt { width: 100%; height: 100%; background: #000; display: grid; place-items: center; }
+  .hero-yt iframe { width: 100%; height: 100%; border: none; }
   .detail-body { display: grid; grid-template-columns: 1fr 340px; gap: 0; }
   .detail-main { padding: 28px 32px; }
   .detail-side { padding: 28px 24px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 20px; }
   .detail-tag {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
-    background: var(--free-bg); color: var(--free-fg); margin-bottom: 12px;
+    background: var(--free-bg); color: var(--free-fg); margin-bottom: 10px;
   }
+  .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
   .detail-title { font-size: 24px; font-weight: 700; letter-spacing: -.03em; line-height: 1.25; margin-bottom: 16px; }
   .detail-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; color: var(--muted); font-size: 13px; }
   .detail-meta span { display: inline-flex; align-items: center; gap: 5px; }
@@ -298,7 +302,6 @@
   .detail-desc { font-size: 15px; line-height: 1.7; color: var(--ink); }
   .detail-desc p { margin-bottom: 12px; }
 
-  .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
   .detail-tag-item {
     padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
     background: var(--bg); border: 1px solid var(--line); color: var(--muted);
@@ -408,14 +411,6 @@
   .report-link svg { width: 14px; height: 14px; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { .report-link:hover { background: #3b1111; } } }
 
-  .youtube-wrap {
-    position: relative; width: 100%; padding-bottom: 56.25%;
-    border-radius: 10px; overflow: hidden; background: #000;
-  }
-  .youtube-wrap iframe {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
-  }
-
   .dl-btn {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; height: 46px; border-radius: 10px; border: none;
@@ -467,7 +462,8 @@
     .detail-side { border-left: none; border-top: 1px solid var(--line); }
     .detail-main { padding: 20px; }
     .detail-side { padding: 20px; }
-    .detail-hero { aspect-ratio: 16/9; }
+    .detail-hero { aspect-ratio: auto; grid-template-columns: 1fr; }
+    .hero-yt { aspect-ratio: 16/9; }
   }
 </style>
 <!-- Google tag (gtag.js) -->
@@ -559,7 +555,10 @@
     <button class="detail-close" id="detailClose" aria-label="Close">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-    <div class="detail-hero" id="detailHero"></div>
+    <div class="detail-hero" id="detailHero">
+      <div class="hero-thumb" id="heroThumb"></div>
+      <div class="hero-yt" id="heroYt" style="display:none;"></div>
+    </div>
     <div class="detail-body">
       <div class="detail-main">
         <span class="detail-tag" id="detailCategory"></span>
@@ -604,10 +603,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
             Report Issue
           </button>
-        </div>
-        <div class="side-card" id="youtubeCard" style="display:none;">
-          <h4>Preview Video</h4>
-          <div class="youtube-wrap" id="youtubeWrap"></div>
         </div>
         <div class="side-card dev-card">
           <h4>Developer Details</h4>
