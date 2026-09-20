@@ -72,12 +72,12 @@
   }
 
   function renderTagChips() {
-    var wrap = document.getElementById("tagChips");
-    if (!wrap) return;
-    if (!state.allTags.length) { wrap.innerHTML = ""; return; }
-    wrap.innerHTML = '<button class="chip" type="button" data-tag="All" aria-pressed="' + (state.tag === "" || state.tag === "All") + '">All Tags</button>' +
+    var sel = document.getElementById("tagSelect");
+    if (!sel) return;
+    var cur = state.tag || "All";
+    sel.innerHTML = '<option value="All">All Tags</option>' +
       state.allTags.map(function (t) {
-        return '<button class="chip" type="button" data-tag="' + esc(t) + '" aria-pressed="' + (state.tag === t) + '">' + esc(t) + '</button>';
+        return '<option value="' + esc(t) + '"' + (cur === t ? ' selected' : '') + '>' + esc(t) + '</option>';
       }).join("");
   }
 
@@ -110,12 +110,13 @@
       var catObj = state.categories.find(function (c) { return c.name === i.category; });
       var hue = catObj ? catObj.hue : 220;
       var thumb = i.image ? '<img src="' + esc(i.image) + '" alt="" loading="lazy">' : art(i.category);
-      var tagsHtml = (i.tags || []).slice(0, 3).map(function (t) {
-        return '<span style="font-size:11px;color:var(--muted);margin-left:4px;">#' + esc(t) + '</span>';
+      var catChip = '<span class="card-chip card-cat">' + esc(i.category) + '</span>';
+      var tagsHtml = (i.tags || []).slice(0, 2).map(function (t) {
+        return '<span class="card-chip card-tag">#' + esc(t) + '</span>';
       }).join("");
       return '<div class="card" data-id="' + esc(i.id) + '" role="button" tabindex="0">' +
         '<div class="thumb" style="--h:' + hue + '">' + thumb + '<span class="free">Free</span></div>' +
-        '<div class="body"><h2 class="title">' + esc(i.title) + tagsHtml + '</h2>' +
+        '<div class="body"><div class="card-chips">' + catChip + tagsHtml + '</div><h2 class="title">' + esc(i.title) + '</h2>' +
         '<div class="meta"><span title="Downloads">' + ICON_DL + fmtNum(i.downloads) + '</span>' +
         '<span title="Date added">' + ICON_CAL + fmtDate(i.date) + '</span></div></div></div>';
     }).join("");
@@ -346,10 +347,8 @@
     renderChips(); renderGrid();
   });
 
-  document.getElementById("tagChips").addEventListener("click", function (e) {
-    var b = e.target.closest(".chip");
-    if (!b) return;
-    state.tag = b.getAttribute("data-tag");
+  document.getElementById("tagSelect").addEventListener("change", function (e) {
+    state.tag = e.target.value;
     state.visibleCount = 19;
     renderTagChips(); renderGrid();
   });
