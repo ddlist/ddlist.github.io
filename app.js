@@ -204,17 +204,27 @@
 
     detailBg.classList.add("open");
     document.body.style.overflow = "hidden";
+    history.pushState(null, "", "?id=" + itemId);
   }
 
   function closeDetail() {
     detailBg.classList.remove("open");
     document.body.style.overflow = "";
     state.currentItem = null;
+    history.pushState(null, "", window.location.pathname);
   }
 
   detailClose.addEventListener("click", closeDetail);
   detailBg.addEventListener("click", function (e) { if (e.target === detailBg) closeDetail(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeDetail(); closeInstall(); } });
+  window.addEventListener("popstate", function () {
+    var params = new URLSearchParams(window.location.search);
+    var deepId = params.get("id");
+    if (deepId) {
+      var found = state.items.find(function (i) { return i.id === deepId; });
+      if (found) openDetail(deepId);
+    } else { closeDetail(); }
+  });
 
   document.getElementById("grid").addEventListener("click", function (e) {
     var card = e.target.closest(".card");
@@ -385,6 +395,12 @@
       state.items = items;
       state.allTags = collectTags(items);
       renderStats(); renderChips(); renderTagChips(); renderGrid();
+      var params = new URLSearchParams(window.location.search);
+      var deepId = params.get("id");
+      if (deepId) {
+        var found = items.find(function (i) { return i.id === deepId; });
+        if (found) openDetail(deepId);
+      }
     });
   });
 })();
