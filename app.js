@@ -302,9 +302,14 @@
     }).catch(function () { list.innerHTML = '<p class="comment-empty">No comments yet.</p>'; count.textContent = "0"; });
   }
 
+  var lastComment = 0;
+  var lastReport = 0;
+
   document.getElementById("commentForm").addEventListener("submit", function (e) {
     e.preventDefault();
     if (!state.currentItem) return;
+    var now = Date.now();
+    if (now - lastComment < 30000) { alert("Please wait 30 seconds before commenting again."); return; }
     var name = document.getElementById("commentName").value.trim();
     var text = document.getElementById("commentText").value.trim();
     if (!name || !text) return;
@@ -313,8 +318,11 @@
       user: name, text: text,
       date: new Date().toISOString().slice(0, 10),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () { document.getElementById("commentText").value = ""; loadComments(state.currentItem.id); })
-      .catch(function (err) { alert("Error: " + err.message); });
+    }).then(function () {
+      lastComment = Date.now();
+      document.getElementById("commentText").value = "";
+      loadComments(state.currentItem.id);
+    }).catch(function (err) { alert("Error: " + err.message); });
   });
 
   /* ---------- report ---------- */
@@ -323,6 +331,8 @@
   });
   document.getElementById("submitReport").addEventListener("click", function () {
     if (!state.currentItem) return;
+    var now = Date.now();
+    if (now - lastReport < 60000) { alert("Please wait 60 seconds before reporting again."); return; }
     var reason = document.getElementById("reportReason").value;
     var email = document.getElementById("reportEmail").value.trim();
     var details = document.getElementById("reportDetails").value.trim();
@@ -333,6 +343,7 @@
       date: new Date().toISOString().slice(0, 10),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function () {
+      lastReport = Date.now();
       document.getElementById("reportSuccess").classList.add("show");
       document.getElementById("reportForm").classList.remove("open");
     }).catch(function (err) { alert("Error: " + err.message); });

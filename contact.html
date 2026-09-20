@@ -250,9 +250,17 @@
   var form = document.getElementById('contactForm');
   var status = document.getElementById('status');
   var btn = document.getElementById('submitBtn');
+  var lastSubmit = 0;
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+
+    var now = Date.now();
+    if (now - lastSubmit < 60000) {
+      status.textContent = 'Please wait 60 seconds before sending again.';
+      status.className = 'status err';
+      return;
+    }
 
     var name = form.name.value.trim();
     var email = form.email.value.trim();
@@ -278,6 +286,7 @@
       date: new Date().toISOString()
     })
     .then(function () {
+      lastSubmit = Date.now();
       status.textContent = 'Message sent! I will get back to you soon.';
       status.className = 'status ok';
       form.reset();

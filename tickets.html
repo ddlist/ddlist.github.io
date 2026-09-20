@@ -175,9 +175,17 @@
   var formCard = document.getElementById("ticketForm");
   var successMsg = document.getElementById("successMsg");
   var submitBtn = document.getElementById("submitBtn");
+  var lastSubmit = 0;
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+
+    var now = Date.now();
+    if (now - lastSubmit < 60000) {
+      alert("Please wait 60 seconds before submitting again.");
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting...";
 
@@ -191,6 +199,7 @@
     };
 
     db.collection("tickets").add(ticket).then(function () {
+      lastSubmit = Date.now();
       formCard.style.display = "none";
       successMsg.style.display = "block";
     }).catch(function (err) {
