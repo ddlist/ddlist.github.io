@@ -313,6 +313,10 @@
         <label for="sDownloads">Downloads (override)</label>
         <input type="number" id="sDownloads" min="0" value="0">
       </div>
+      <div class="form-group full" style="flex-direction:row;align-items:center;gap:10px;">
+        <input type="checkbox" id="sInstallation" checked style="width:18px;height:18px;accent-color:var(--accent);">
+        <label for="sInstallation" style="margin:0;font-size:14px;">Installation Available (show contact prompt before download)</label>
+      </div>
       <div class="form-actions full">
         <button type="submit" class="btn primary">Save</button>
         <button type="button" class="btn" id="cancelModal">Cancel</button>
@@ -689,6 +693,7 @@
       document.getElementById("sDetails").value = s.details || "";
       document.getElementById("sStatus").value = s.status || "published";
       document.getElementById("sDownloads").value = s.downloads || 0;
+      document.getElementById("sInstallation").checked = s.installation !== false;
       modal.classList.add("open");
     }
     if (delBtn) {
@@ -713,6 +718,7 @@
       details: document.getElementById("sDetails").value.trim(),
       status: document.getElementById("sStatus").value,
       downloads: parseInt(document.getElementById("sDownloads").value) || 0,
+      installation: document.getElementById("sInstallation").checked,
       date: new Date().toISOString().slice(0, 10)
     };
 

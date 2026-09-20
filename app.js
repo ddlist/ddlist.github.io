@@ -40,7 +40,8 @@
           id: doc.id, title: d.title || "", category: d.category || "",
           downloads: d.downloads || 0, date: d.date || "", image: d.image || "",
           link: d.link || "#", version: d.version || "", details: d.details || "",
-          author: d.author || "SHA REEQ", tags: d.tags || []
+          author: d.author || "SHA REEQ", tags: d.tags || [],
+          installation: d.installation !== false
         });
       });
       cb(items);
@@ -169,7 +170,10 @@
     document.getElementById("detailVersion").textContent = item.version || "\u2014";
     document.getElementById("detailDate").textContent = fmtDate(item.date);
     document.getElementById("detailDownloads").textContent = fmtNum(item.downloads);
-    document.getElementById("detailLink").href = item.link;
+
+    var dlBtn = document.getElementById("detailLink");
+    dlBtn.href = item.link;
+    dlBtn.setAttribute("data-install", item.installation ? "1" : "0");
 
     trackDownload(item.id);
     loadComments(item.id);
@@ -189,7 +193,7 @@
 
   detailClose.addEventListener("click", closeDetail);
   detailBg.addEventListener("click", function (e) { if (e.target === detailBg) closeDetail(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDetail(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeDetail(); closeInstall(); } });
 
   document.getElementById("grid").addEventListener("click", function (e) {
     var card = e.target.closest(".card");
@@ -200,6 +204,59 @@
       var card = e.target.closest(".card");
       if (card) { e.preventDefault(); openDetail(card.dataset.id); }
     }
+  });
+
+  /* ---------- install popup ---------- */
+  var installBg = document.getElementById("installBg");
+  var installClose = document.getElementById("installClose");
+  var installPhone = document.getElementById("installPhone");
+  var installDlBtn = document.getElementById("installDlBtn");
+  var installSkip = document.getElementById("installSkip");
+
+  function openInstall() {
+    installBg.classList.add("open");
+    installPhone.value = "";
+    installPhone.focus();
+  }
+  function closeInstall() {
+    installBg.classList.remove("open");
+  }
+
+  installClose.addEventListener("click", closeInstall);
+  installBg.addEventListener("click", function (e) { if (e.target === installBg) closeInstall(); });
+
+  document.getElementById("detailLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    var item = state.currentItem;
+    if (!item) return;
+    if (this.getAttribute("data-install") === "1") {
+      openInstall();
+    } else {
+      window.open(item.link, "_blank");
+    }
+  });
+
+  installDlBtn.addEventListener("click", function () {
+    var item = state.currentItem;
+    if (!item) return;
+    var phone = installPhone.value.trim();
+    if (phone) {
+      db.collection("leads").add({
+        itemId: item.id, itemTitle: item.title,
+        phone: phone,
+        date: new Date().toISOString().slice(0, 10),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(function () {});
+    }
+    closeInstall();
+    window.open(item.link, "_blank");
+  });
+
+  installSkip.addEventListener("click", function () {
+    var item = state.currentItem;
+    if (!item) return;
+    closeInstall();
+    window.open(item.link, "_blank");
   });
 
   /* ---------- comments ---------- */
