@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var state = { cat: "All", q: "", tag: "", sort: "newest", items: [], categories: [], allTags: [], currentItem: null };
+  var state = { cat: "All", q: "", tag: "", sort: "newest", items: [], categories: [], allTags: [], currentItem: null, visibleCount: 19 };
 
   function fmtNum(n) { return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".0", "") + "k" : String(n); }
   function fmtDate(s) { var d = new Date(s + "T00:00:00"); return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); }
@@ -105,7 +105,8 @@
       grid.innerHTML = '<div class="empty"><b>No matches</b>Try a different keyword or pick another category.</div>';
       return;
     }
-    grid.innerHTML = list.map(function (i) {
+    var shown = list.slice(0, state.visibleCount);
+    grid.innerHTML = shown.map(function (i) {
       var catObj = state.categories.find(function (c) { return c.name === i.category; });
       var hue = catObj ? catObj.hue : 220;
       var thumb = i.image ? '<img src="' + esc(i.image) + '" alt="" loading="lazy">' : art(i.category);
@@ -118,6 +119,9 @@
         '<div class="meta"><span title="Downloads">' + ICON_DL + fmtNum(i.downloads) + '</span>' +
         '<span title="Date added">' + ICON_CAL + fmtDate(i.date) + '</span></div></div></div>';
     }).join("");
+    if (list.length > state.visibleCount) {
+      grid.innerHTML += '<div class="load-more-wrap"><button class="load-more-btn" id="loadMore">Load more (' + (list.length - state.visibleCount) + ' remaining)</button></div>';
+    }
   }
 
   function renderStats() {
@@ -171,8 +175,7 @@
     document.getElementById("detailTitle").textContent = item.title;
     document.getElementById("detailMeta").innerHTML =
       '<span>' + ICON_CAL + ' Added ' + fmtDate(item.date) + '</span>' +
-      '<span>' + ICON_DL + ' ' + fmtNum(item.downloads) + ' downloads</span>' +
-      '<span>By ' + esc(item.author) + '</span>';
+      '<span>' + ICON_DL + ' ' + fmtNum(item.downloads) + ' downloads</span>';
 
     var tagsContainer = document.getElementById("detailTags");
     tagsContainer.innerHTML = (item.tags || []).map(function (t) {
@@ -338,6 +341,7 @@
     var b = e.target.closest(".chip");
     if (!b) return;
     state.cat = b.getAttribute("data-cat");
+    state.visibleCount = 19;
     renderChips(); renderGrid();
   });
 
@@ -345,16 +349,21 @@
     var b = e.target.closest(".chip");
     if (!b) return;
     state.tag = b.getAttribute("data-tag");
+    state.visibleCount = 19;
     renderTagChips(); renderGrid();
   });
 
   document.getElementById("q").addEventListener("input", function (e) {
-    state.q = e.target.value; renderGrid();
+    state.q = e.target.value; state.visibleCount = 19; renderGrid();
   });
 
   document.getElementById("sortSelect").addEventListener("change", function (e) {
-    state.sort = e.target.value; renderGrid();
+    state.sort = e.target.value; state.visibleCount = 19; renderGrid();
   });
+
+  document.getElementById("grid").addEventListener("click", function (e) {
+    var loadBtn = e.target.closest(".load-more-btn");
+    if (loadBtn) { state.visibleCount += 19; renderGrid(); return; }
 
   /* ---------- init ---------- */
   loadCategories(function (cats) {
