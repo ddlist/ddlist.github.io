@@ -323,10 +323,11 @@
   document.getElementById("submitReport").addEventListener("click", function () {
     if (!state.currentItem) return;
     var reason = document.getElementById("reportReason").value;
+    var email = document.getElementById("reportEmail").value.trim();
     var details = document.getElementById("reportDetails").value.trim();
     db.collection("reports").add({
       itemId: state.currentItem.id, itemTitle: state.currentItem.title,
-      reason: reason, details: details, user: "Visitor",
+      reason: reason, email: email, details: details, user: "Visitor",
       status: "open",
       date: new Date().toISOString().slice(0, 10),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
